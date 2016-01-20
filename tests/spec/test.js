@@ -71,21 +71,21 @@
       var fat;
       try {
         /*jshint evil:true */
-        fat = new Function('return (x, y) => {return this;};');
+        fat = new Function('return (x, y) => {return this;};')();
         expect(isFunction(fat)).toBe(true);
       } catch (ignore) {}
 
       var gen;
       try {
         /*jshint evil:true */
-        gen = new Function('return function* idMaker(x, y){};');
+        gen = new Function('return function* idMaker(x, y){};')();
         expect(isFunction(gen)).toBe(true);
       } catch (ignore) {}
 
       var classes;
       try {
         /*jshint evil:true */
-        classes = new Function('"use strict"; return class My {};');
+        classes = new Function('"use strict"; return class My {};')();
         expect(isFunction(classes)).toBe(true);
       } catch (ignore) {}
     });

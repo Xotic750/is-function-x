@@ -22,7 +22,7 @@ alt="devDependency status" height="18"/>
 alt="npm version" height="18">
 </a>
 
-isFunction module.
+isFunction module. Determine whether a given value is a function object.
 
 <h2>ECMAScript compatibility shims for legacy JavaScript engines</h2>
 `es5-shim.js` monkey-patches a JavaScript context to contain all EcmaScript 5
@@ -41,7 +41,7 @@ es5-shim.js to be able to work properly.
 `es6.shim.js` provides compatibility shims so that legacy JavaScript engines
 behave as closely as possible to ECMAScript 6 (Harmony).
 
-**Version**: 1.0.0  
+**Version**: 1.0.1  
 **Author:** Xotic750 <Xotic750@gmail.com>  
 **License**: [MIT](&lt;https://opensource.org/licenses/MIT&gt;)  
 **Copyright**: Xotic750  
