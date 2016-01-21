@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "has-to-string-tag-x": "^1.0.5",
-    "to-string-tag-x": "^1.0.5",
+    "to-string-tag-x": "^1.0.6",
     "is-primitive": "^2.0.0"
   },
   "devDependencies": {
