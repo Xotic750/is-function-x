@@ -1,6 +1,6 @@
 {
   "name": "is-function-x",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "isFunction module. Determine whether a given value is a function object.",
   "homepage": "https://github.com/Xotic750/is-function-x",
   "author": {
@@ -29,15 +29,15 @@
     "url": "https://github.com/Xotic750/is-function-x/issues"
   },
   "dependencies": {
-    "has-to-string-tag-x": "^1.0.6",
-    "to-string-tag-x": "^1.0.7",
+    "has-to-string-tag-x": "^1.0.7",
+    "to-string-tag-x": "^1.0.8",
     "is-primitive": "^2.0.0"
   },
   "devDependencies": {
     "es5-shim": "^4.5.0",
     "es6-shim": "^0.34.2",
     "json3": "^3.3.2",
-    "jscs": "^2.8.0",
+    "jscs": "^2.9.0",
     "uglify-js": "^2.6.1",
     "browserify": "^13.0.0",
     "browserify-derequire": "^0.9.4",
