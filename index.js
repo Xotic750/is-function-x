@@ -41,24 +41,27 @@
  * `es6.shim.js` provides compatibility shims so that legacy JavaScript engines
  * behave as closely as possible to ECMAScript 6 (Harmony).
  *
- * @version 1.0.6
+ * @version 1.1.0
  * @author Xotic750 <Xotic750@gmail.com>
  * @copyright  Xotic750
  * @license {@link <https://opensource.org/licenses/MIT> MIT}
  * @module is-function-x
  */
 
-/*jslint maxlen:80, es6:false, white:true */
+/* jslint maxlen:80, es6:true, white:true */
 
-/*jshint bitwise:true, camelcase:true, curly:true, eqeqeq:true, forin:true,
-  freeze:true, futurehostile:true, latedef:true, newcap:true, nocomma:true,
-  nonbsp:true, singleGroups:true, strict:true, undef:true, unused:true,
-  es3:true, esnext:false, plusplus:true, maxparams:1, maxdepth:1,
-  maxstatements:8, maxcomplexity:4 */
+/* jshint bitwise:true, camelcase:true, curly:true, eqeqeq:true, forin:true,
+   freeze:true, futurehostile:true, latedef:true, newcap:true, nocomma:true,
+   nonbsp:true, singleGroups:true, strict:true, undef:true, unused:true,
+   es3:false, esnext:true, plusplus:true, maxparams:1, maxdepth:1,
+   maxstatements:3, maxcomplexity:2 */
 
-/*global module */
+/* eslint strict: 1, max-statements: 1 */
 
-;(function () {
+/* global module */
+
+;(function () { // eslint-disable-line no-extra-semi
+
   'use strict';
 
   var fToString = Function.prototype.toString;
@@ -76,13 +79,13 @@
    * @return {boolean} Returns `true` if `value` is correctly classified,
    * else `false`.
    */
-  function tryFunctionObject(value) {
+  var tryFunctionObject = function (value) {
     try {
       fToString.call(value);
       return true;
     } catch (ignore) {}
     return false;
-  }
+  };
 
   /**
    * Checks if `value` is classified as a `Function` object.
