@@ -24,7 +24,7 @@
  *
  * Determine whether a given value is a function object.
  *
- * @version 1.1.1
+ * @version 1.2.0
  * @author Xotic750 <Xotic750@gmail.com>
  * @copyright  Xotic750
  * @license {@link <https://opensource.org/licenses/MIT> MIT}
@@ -55,7 +55,7 @@
    * @return {boolean} Returns `true` if `value` is correctly classified,
    * else `false`.
    */
-  var tryFunctionObject = function funcToString(value) {
+  var tryFuncToString = function funcToString(value) {
     try {
       fToString.call(value);
       return true;
@@ -89,7 +89,7 @@
       return false;
     }
     if (hasToStringTag) {
-      return tryFunctionObject(value);
+      return tryFuncToString(value);
     }
     var strTag = toStringTag(value);
     return strTag === funcTag || strTag === genTag || strTag === asyncTag;
