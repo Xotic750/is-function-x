@@ -25,7 +25,7 @@ alt="npm version" height="18">
 
 Determine whether a given value is a function object.
 
-**Version**: 1.2.0  
+**Version**: 1.3.0  
 **Author**: Xotic750 <Xotic750@gmail.com>  
 **License**: [MIT](&lt;https://opensource.org/licenses/MIT&gt;)  
 **Copyright**: Xotic750  
@@ -55,6 +55,7 @@ isFunction(function () {}); // true
 isFunction(new Function ()); // true
 isFunction(function* test1() {}); // true
 isFunction(function test2(a, b) {}); // true
-isFunction(class Test {}); // true
+ - isFunction(async function test3() {}); // true
+isFunction(class Test {}); // false
 isFunction((x, y) => {return this;}); // true
 ```
