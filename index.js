@@ -1,6 +1,6 @@
 /**
  * @file Determine whether a given value is a function object.
- * @version 3.0.0
+ * @version 3.1.0
  * @author Xotic750 <Xotic750@gmail.com>
  * @copyright  Xotic750
  * @license {@link <https://opensource.org/licenses/MIT> MIT}
@@ -94,7 +94,7 @@ module.exports = function isFunction(value) {
     return tryFuncToString(value, allowClass);
   }
 
-  if (hasNativeClass && allowClass && isES6ClassFn(value)) {
+  if (hasNativeClass && allowClass === false && isES6ClassFn(value)) {
     return false;
   }
 

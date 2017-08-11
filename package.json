@@ -1,6 +1,6 @@
 {
   "name": "is-function-x",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "Determine whether a given value is a function object.",
   "homepage": "https://github.com/Xotic750/is-function-x",
   "author": {
