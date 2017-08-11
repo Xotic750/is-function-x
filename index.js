@@ -1,6 +1,6 @@
 /**
  * @file Determine whether a given value is a function object.
- * @version 1.4.0
+ * @version 3.0.0
  * @author Xotic750 <Xotic750@gmail.com>
  * @copyright  Xotic750
  * @license {@link <https://opensource.org/licenses/MIT> MIT}
@@ -13,21 +13,28 @@ var fToString = Function.prototype.toString;
 var toStringTag = require('to-string-tag-x');
 var hasToStringTag = require('has-to-string-tag-x');
 var isPrimitive = require('is-primitive');
+var normalise = require('normalize-space-x');
+var deComment = require('replace-comments-x');
 var funcTag = '[object Function]';
 var genTag = '[object GeneratorFunction]';
 var asyncTag = '[object AsyncFunction]';
 
-var constructorRegex = /^\s*class /;
+var hasNativeClass = true;
+try {
+  // eslint-disable-next-line no-new-func
+  Function('"use strict"; return class My {};')();
+} catch (ignore) {
+  hasNativeClass = false;
+}
+
+var ctrRx = /^class /;
 var isES6ClassFn = function isES6ClassFunc(value) {
   try {
-    var fnStr = fToString.call(value);
-    var singleStripped = fnStr.replace(/\/\/.*\n/g, '');
-    var multiStripped = singleStripped.replace(/\/\*[.\s\S]*\*\//g, '');
-    var spaceStripped = multiStripped.replace(/\n/mg, ' ').replace(/ {2}/g, ' ');
-    return constructorRegex.test(spaceStripped);
+    return ctrRx.test(normalise(deComment(fToString.call(value), ' ')));
   } catch (ignore) {}
 
-  return false; // not a function
+  // not a function
+  return false;
 };
 
 /**
@@ -35,12 +42,14 @@ var isES6ClassFn = function isES6ClassFunc(value) {
  *
  * @private
  * @param {*} value - The value to check.
+ * @param {boolean} allowClass - Whether to filter ES6 classes.
  * @returns {boolean} Returns `true` if `value` is correctly classified,
  * else `false`.
  */
-var tryFuncToString = function funcToString(value) {
+
+var tryFuncToString = function funcToString(value, allowClass) {
   try {
-    if (isES6ClassFn(value)) {
+    if (hasNativeClass && allowClass === false && isES6ClassFn(value)) {
       return false;
     }
 
@@ -55,6 +64,7 @@ var tryFuncToString = function funcToString(value) {
  * Checks if `value` is classified as a `Function` object.
  *
  * @param {*} value - The value to check.
+ * @param {boolean} [allowClass=false] - Whether to filter ES6 classes.
  * @returns {boolean} Returns `true` if `value` is correctly classified,
  * else `false`.
  * @example
@@ -69,8 +79,9 @@ var tryFuncToString = function funcToString(value) {
  * isFunction(new Function ()); // true
  * isFunction(function* test1() {}); // true
  * isFunction(function test2(a, b) {}); // true
- - isFunction(async function test3() {}); // true
+ * isFunction(async function test3() {}); // true
  * isFunction(class Test {}); // false
+ * isFunction(class Test {}, true); // true
  * isFunction((x, y) => {return this;}); // true
  */
 module.exports = function isFunction(value) {
@@ -78,11 +89,12 @@ module.exports = function isFunction(value) {
     return false;
   }
 
+  var allowClass = arguments.length > 0 ? Boolean(arguments[1]) : false;
   if (hasToStringTag) {
-    return tryFuncToString(value);
+    return tryFuncToString(value, allowClass);
   }
 
-  if (isES6ClassFn(value)) {
+  if (hasNativeClass && allowClass && isES6ClassFn(value)) {
     return false;
   }
 

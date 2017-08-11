@@ -122,5 +122,6 @@ describe('Basic tests', function () {
     // eslint-disable-next-line no-new-func
     var classes = new Function('"use strict"; return class My {};')();
     expect(isFunction(classes)).toBe(false);
+    expect(isFunction(classes, true)).toBe(true);
   });
 });

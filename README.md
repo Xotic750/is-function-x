@@ -23,22 +23,23 @@
 ## is-function-x
 Determine whether a given value is a function object.
 
-**Version**: 1.4.0  
+**Version**: 3.0.0  
 **Author**: Xotic750 <Xotic750@gmail.com>  
 **License**: [MIT](&lt;https://opensource.org/licenses/MIT&gt;)  
 **Copyright**: Xotic750  
 <a name="exp_module_is-function-x--module.exports"></a>
 
-### `module.exports(value)` ⇒ <code>boolean</code> ⏏
+### `module.exports(value, [allowClass])` ⇒ <code>boolean</code> ⏏
 Checks if `value` is classified as a `Function` object.
 
 **Kind**: Exported function  
 **Returns**: <code>boolean</code> - Returns `true` if `value` is correctly classified,
 else `false`.  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| value | <code>\*</code> | The value to check. |
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| value | <code>\*</code> |  | The value to check. |
+| [allowClass] | <code>boolean</code> | <code>false</code> | Whether to filter ES6 classes. |
 
 **Example**  
 ```js
@@ -53,7 +54,8 @@ isFunction(function () {}); // true
 isFunction(new Function ()); // true
 isFunction(function* test1() {}); // true
 isFunction(function test2(a, b) {}); // true
- - isFunction(async function test3() {}); // true
+isFunction(async function test3() {}); // true
 isFunction(class Test {}); // false
+isFunction(class Test {}, true); // true
 isFunction((x, y) => {return this;}); // true
 ```
