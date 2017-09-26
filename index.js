@@ -1,6 +1,6 @@
 /**
  * @file Determine whether a given value is a function object.
- * @version 3.1.1
+ * @version 3.2.0
  * @author Xotic750 <Xotic750@gmail.com>
  * @copyright  Xotic750
  * @license {@link <https://opensource.org/licenses/MIT> MIT}
@@ -9,7 +9,10 @@
 
 'use strict';
 
+var attempt = require('attempt-x');
 var fToString = Function.prototype.toString;
+var toBoolean = require('to-boolean-x');
+var isFalsey = require('is-falsey-x');
 var toStringTag = require('to-string-tag-x');
 var hasToStringTag = require('has-to-string-tag-x');
 var isPrimitive = require('is-primitive');
@@ -18,23 +21,22 @@ var deComment = require('replace-comments-x');
 var funcTag = '[object Function]';
 var genTag = '[object GeneratorFunction]';
 var asyncTag = '[object AsyncFunction]';
-
-var hasNativeClass = true;
-try {
-  // eslint-disable-next-line no-new-func
-  Function('"use strict"; return class My {};')();
-} catch (ignore) {
-  hasNativeClass = false;
-}
-
 var ctrRx = /^class /;
-var isES6ClassFn = function isES6ClassFunc(value) {
-  try {
-    return ctrRx.test(normalise(deComment(fToString.call(value), ' ')));
-  } catch (ignore) {}
+var test = ctrRx.test;
 
-  // not a function
-  return false;
+var hasNativeClass = attempt(function () {
+  // eslint-disable-next-line no-new-func
+  return Function('"use strict"; return class My {};')();
+}).threw === false;
+
+var testClassstring = function _testClassstring(value) {
+  return test.call(ctrRx, normalise(deComment(fToString.call(value), ' ')));
+};
+
+var isES6ClassFn = function isES6ClassFunc(value) {
+  var result = attempt(testClassstring, value);
+
+  return result.threw === false && result.value;
 };
 
 /**
@@ -46,18 +48,12 @@ var isES6ClassFn = function isES6ClassFunc(value) {
  * @returns {boolean} Returns `true` if `value` is correctly classified,
  * else `false`.
  */
-
 var tryFuncToString = function funcToString(value, allowClass) {
-  try {
-    if (hasNativeClass && allowClass === false && isES6ClassFn(value)) {
-      return false;
-    }
+  if (hasNativeClass && allowClass === false && isES6ClassFn(value)) {
+    return false;
+  }
 
-    fToString.call(value);
-    return true;
-  } catch (ignore) {}
-
-  return false;
+  return attempt.call(value, fToString).threw === false;
 };
 
 /**
@@ -89,12 +85,11 @@ module.exports = function isFunction(value) {
     return false;
   }
 
-  var allowClass = arguments.length > 0 ? Boolean(arguments[1]) : false;
   if (hasToStringTag) {
-    return tryFuncToString(value, allowClass);
+    return tryFuncToString(value, toBoolean(arguments[1]));
   }
 
-  if (hasNativeClass && allowClass === false && isES6ClassFn(value)) {
+  if (hasNativeClass && isFalsey(arguments[1]) && isES6ClassFn(value)) {
     return false;
   }
 

@@ -23,7 +23,7 @@
 ## is-function-x
 Determine whether a given value is a function object.
 
-**Version**: 3.1.1  
+**Version**: 3.2.0  
 **Author**: Xotic750 <Xotic750@gmail.com>  
 **License**: [MIT](&lt;https://opensource.org/licenses/MIT&gt;)  
 **Copyright**: Xotic750  
