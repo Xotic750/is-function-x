@@ -1,6 +1,6 @@
 /**
  * @file Determine whether a given value is a function object.
- * @version 3.2.0
+ * @version 3.3.0
  * @author Xotic750 <Xotic750@gmail.com>
  * @copyright  Xotic750
  * @license {@link <https://opensource.org/licenses/MIT> MIT}
@@ -16,7 +16,7 @@ var isFalsey = require('is-falsey-x');
 var toStringTag = require('to-string-tag-x');
 var hasToStringTag = require('has-to-string-tag-x');
 var isPrimitive = require('is-primitive');
-var normalise = require('normalize-space-x');
+var normalise = require('normalize-space-x').normalizeSpace;
 var deComment = require('replace-comments-x');
 var funcTag = '[object Function]';
 var genTag = '[object GeneratorFunction]';
