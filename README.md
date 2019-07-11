@@ -21,41 +21,44 @@
 <a name="module_is-function-x"></a>
 
 ## is-function-x
+
 Determine whether a given value is a function object.
 
-**Version**: 3.3.0  
-**Author**: Xotic750 <Xotic750@gmail.com>  
-**License**: [MIT](&lt;https://opensource.org/licenses/MIT&gt;)  
-**Copyright**: Xotic750  
 <a name="exp_module_is-function-x--module.exports"></a>
 
 ### `module.exports(value, [allowClass])` ⇒ <code>boolean</code> ⏏
+
 Checks if `value` is classified as a `Function` object.
 
 **Kind**: Exported function  
 **Returns**: <code>boolean</code> - Returns `true` if `value` is correctly classified,
-else `false`.  
+else `false`.
 
-| Param | Type | Default | Description |
-| --- | --- | --- | --- |
-| value | <code>\*</code> |  | The value to check. |
+| Param        | Type                 | Default            | Description                    |
+| ------------ | -------------------- | ------------------ | ------------------------------ |
+| value        | <code>\*</code>      |                    | The value to check.            |
 | [allowClass] | <code>boolean</code> | <code>false</code> | Whether to filter ES6 classes. |
 
-**Example**  
-```js
-var isFunction = require('is-function-x');
+**Example**
 
-isFunction(); // false
-isFunction(Number.MIN_VALUE); // false
-isFunction('abc'); // false
-isFunction(true); // false
-isFunction({ name: 'abc' }); // false
-isFunction(function () {}); // true
-isFunction(new Function ()); // true
-isFunction(function* test1() {}); // true
-isFunction(function test2(a, b) {}); // true
-isFunction(async function test3() {}); // true
-isFunction(class Test {}); // false
-isFunction(class Test {}, true); // true
-isFunction((x, y) => {return this;}); // true
+```js
+import isFunction from 'is-function-x';
+
+console.log(isFunction()); // false
+console.log(isFunction(Number.MIN_VALUE)); // false
+console.log(isFunction('abc')); // false
+console.log(isFunction(true)); // false
+console.log(isFunction({name: 'abc'})); // false
+console.log(isFunction(function() {})); // true
+console.log(isFunction(new Function())); // true
+console.log(isFunction(function* test1() {})); // true
+console.log(isFunction(function test2(a, b) {})); // true
+console.log(isFunction(async function test3() {})); // true
+console.log(isFunction(class Test {})); // false
+console.log(isFunction(class Test {}, true)); // true
+console.log(
+  isFunction((x, y) => {
+    return this;
+  }),
+); // true
 ```
