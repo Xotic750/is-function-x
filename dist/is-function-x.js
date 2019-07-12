@@ -1,13 +1,14 @@
 /*!
 {
+  "author": "Graham Fairweather",
   "copywrite": "Copyright (c) 2015-present",
-  "date": "2019-07-11T07:35:44.309Z",
+  "date": "2019-07-12T14:52:48.100Z",
   "describe": "",
   "description": "Determine whether a given value is a function object.",
   "file": "is-function-x.js",
-  "hash": "32910eea160538c09e10",
+  "hash": "cef0a588656787cc8fec",
   "license": "MIT",
-  "version": "4.0.2"
+  "version": "4.0.3"
 }
 */
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -119,11 +120,96 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ 	return __webpack_require__(__webpack_require__.s = 5);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var toStr = Object.prototype.toString;
+var hasSymbols = __webpack_require__(2)();
+
+if (hasSymbols) {
+	var symToStr = Symbol.prototype.toString;
+	var symStringRegex = /^Symbol\(.*\)$/;
+	var isSymbolObject = function isRealSymbolObject(value) {
+		if (typeof value.valueOf() !== 'symbol') {
+			return false;
+		}
+		return symStringRegex.test(symToStr.call(value));
+	};
+
+	module.exports = function isSymbol(value) {
+		if (typeof value === 'symbol') {
+			return true;
+		}
+		if (toStr.call(value) !== '[object Symbol]') {
+			return false;
+		}
+		try {
+			return isSymbolObject(value);
+		} catch (e) {
+			return false;
+		}
+	};
+} else {
+
+	module.exports = function isSymbol(value) {
+		// this environment does not support Symbols.
+		return  false && false;
+	};
+}
+
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/*!
+ * is-primitive <https://github.com/jonschlinkert/is-primitive>
+ *
+ * Copyright (c) 2014-present, Jon Schlinkert.
+ * Released under the MIT License.
+ */
+
+
+
+module.exports = function isPrimitive(val) {
+  if (typeof val === 'object') {
+    return val === null;
+  }
+  return typeof val !== 'function';
+};
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(global) {
+
+var origSymbol = global.Symbol;
+var hasSymbolSham = __webpack_require__(4);
+
+module.exports = function hasNativeSymbols() {
+	if (typeof origSymbol !== 'function') { return false; }
+	if (typeof Symbol !== 'function') { return false; }
+	if (typeof origSymbol('foo') !== 'symbol') { return false; }
+	if (typeof Symbol('bar') !== 'symbol') { return false; }
+
+	return hasSymbolSham();
+};
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(3)))
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports) {
 
 var g;
@@ -149,58 +235,754 @@ module.exports = g;
 
 
 /***/ }),
-/* 1 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isFunction;
+/* eslint complexity: [2, 17], max-statements: [2, 33] */
+module.exports = function hasSymbols() {
+	if (typeof Symbol !== 'function' || typeof Object.getOwnPropertySymbols !== 'function') { return false; }
+	if (typeof Symbol.iterator === 'symbol') { return true; }
 
-var _attemptX = _interopRequireDefault(__webpack_require__(2));
+	var obj = {};
+	var sym = Symbol('test');
+	var symObj = Object(sym);
+	if (typeof sym === 'string') { return false; }
 
-var _toBooleanX = _interopRequireDefault(__webpack_require__(3));
+	if (Object.prototype.toString.call(sym) !== '[object Symbol]') { return false; }
+	if (Object.prototype.toString.call(symObj) !== '[object Symbol]') { return false; }
 
-var _isFalseyX = _interopRequireDefault(__webpack_require__(4));
+	// temp disabled per https://github.com/ljharb/object.assign/issues/17
+	// if (sym instanceof Symbol) { return false; }
+	// temp disabled per https://github.com/WebReflection/get-own-property-symbols/issues/4
+	// if (!(symObj instanceof Symbol)) { return false; }
 
-var _toStringTagX = _interopRequireDefault(__webpack_require__(5));
+	// if (typeof Symbol.prototype.toString !== 'function') { return false; }
+	// if (String(sym) !== Symbol.prototype.toString.call(sym)) { return false; }
 
-var _hasToStringTagX = _interopRequireDefault(__webpack_require__(6));
+	var symVal = 42;
+	obj[sym] = symVal;
+	for (sym in obj) { return false; } // eslint-disable-line no-restricted-syntax
+	if (typeof Object.keys === 'function' && Object.keys(obj).length !== 0) { return false; }
 
-var _isPrimitive = _interopRequireDefault(__webpack_require__(7));
+	if (typeof Object.getOwnPropertyNames === 'function' && Object.getOwnPropertyNames(obj).length !== 0) { return false; }
 
-var _normalizeSpaceX = _interopRequireDefault(__webpack_require__(8));
+	var syms = Object.getOwnPropertySymbols(obj);
+	if (syms.length !== 1 || syms[0] !== sym) { return false; }
 
-var _replaceCommentsX = _interopRequireDefault(__webpack_require__(9));
+	if (!Object.prototype.propertyIsEnumerable.call(obj, sym)) { return false; }
 
-var _this = void 0;
+	if (typeof Object.getOwnPropertyDescriptor === 'function') {
+		var descriptor = Object.getOwnPropertyDescriptor(obj, sym);
+		if (descriptor.value !== symVal || descriptor.enumerable !== true) { return false; }
+	}
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	return true;
+};
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+
+// CONCATENATED MODULE: ./node_modules/attempt-x/dist/attempt-x.esm.js
+/**
+ * This method attempts to invoke the function, returning either the result or
+ * the caught error object. Any additional arguments are provided to the
+ * function when it's invoked.
+ *
+ * @param {Function} [fn] - The function to attempt.
+ * @param {...*} [args] - The arguments to invoke the function with.
+ * @returns {object} Returns an object of the result.
+ */
+function attempt(fn) {
+  try {
+    for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      args[_key - 1] = arguments[_key];
+    }
+
+    return {
+      threw: false,
+
+      /* eslint-disable-next-line babel/no-invalid-this */
+      value: fn.apply(this, args)
+    };
+  } catch (e) {
+    return {
+      threw: true,
+      value: e
+    };
+  }
+}
+;
+
+
+// CONCATENATED MODULE: ./node_modules/to-boolean-x/dist/to-boolean-x.esm.js
+/**
+ * The abstract operation ToBoolean converts argument to a value of type Boolean.
+ *
+ * @param {*} [value] - The value to be converted.
+ * @returns {boolean} 'true' if value is truthy; otherwise 'false'.
+ */
+function toBoolean(value) {
+  return !!value;
+}
+
+
+// CONCATENATED MODULE: ./node_modules/is-falsey-x/dist/is-falsey-x.esm.js
+
+/**
+ * This method tests if a given value is falsey.
+ *
+ * @param {*} [value] - The value to test.
+ * @returns {boolean} `true` if the value is falsey: otherwise `false`.
+ */
+
+function isFalsey(value) {
+  return !toBoolean(value);
+}
+
+
+// CONCATENATED MODULE: ./node_modules/to-string-tag-x/dist/to-string-tag-x.esm.js
+var nativeObjectToString = {}.toString;
+/**
+ * The `toStringTag` method returns "[object type]", where type is the
+ * object type.
+ *
+ * @param {*} [value] - The object of which to get the object type string.
+ * @returns {string} The object type string.
+ */
+
+function toStringTag(value) {
+  if (value === null) {
+    return '[object Null]';
+  }
+
+  if (typeof value === 'undefined') {
+    return '[object Undefined]';
+  }
+
+  return nativeObjectToString.call(value);
+}
+
+
+// EXTERNAL MODULE: ./node_modules/is-symbol/index.js
+var is_symbol = __webpack_require__(0);
+var is_symbol_default = /*#__PURE__*/__webpack_require__.n(is_symbol);
+
+// CONCATENATED MODULE: ./node_modules/has-symbol-support-x/dist/has-symbol-support-x.esm.js
+var _this = undefined;
 
 function _newArrowCheck(innerThis, boundThis) { if (innerThis !== boundThis) { throw new TypeError("Cannot instantiate an arrow function"); } }
 
+
+
+var hasSymbolSupport = attempt(function () {
+  _newArrowCheck(this, _this);
+
+  /* eslint-disable-next-line compat/compat */
+  return typeof Symbol === 'function' && is_symbol_default()(Symbol(''));
+}.bind(undefined));
+/**
+ * Indicates if `Symbol`exists and creates the correct type.
+ * `true`, if it exists and creates the correct type, otherwise `false`.
+ *
+ * @type boolean
+ */
+
+/* harmony default export */ var has_symbol_support_x_esm = (hasSymbolSupport.threw === false && hasSymbolSupport.value === true);
+
+
+// CONCATENATED MODULE: ./node_modules/has-to-string-tag-x/dist/has-to-string-tag-x.esm.js
+
+
+/**
+ * Indicates if `Symbol.toStringTag`exists and is the correct type.
+ * `true`, if it exists and is the correct type, otherwise `false`.
+ *
+ * @type boolean
+ */
+
+/* harmony default export */ var has_to_string_tag_x_esm = (has_symbol_support_x_esm &&
+/* eslint-disable-next-line compat/compat */
+is_symbol_default()(Symbol.toStringTag));
+
+
+// EXTERNAL MODULE: ./node_modules/is-primitive/index.js
+var is_primitive = __webpack_require__(1);
+var is_primitive_default = /*#__PURE__*/__webpack_require__.n(is_primitive);
+
+// CONCATENATED MODULE: ./node_modules/is-nil-x/dist/is-nil-x.esm.js
+/**
+ * Checks if `value` is `null` or `undefined`.
+ *
+ * @param {*} [value] - The value to check.
+ * @returns {boolean} Returns `true` if `value` is nullish, else `false`.
+ */
+function isNil(value) {
+  /* eslint-disable-next-line lodash/prefer-is-nil */
+  return value === null || typeof value === 'undefined';
+}
+
+
+// CONCATENATED MODULE: ./node_modules/require-object-coercible-x/dist/require-object-coercible-x.esm.js
+
+/**
+ * The abstract operation RequireObjectCoercible throws an error if argument
+ * is a value that cannot be converted to an Object using ToObject.
+ *
+ * @param {*} [value] - The `value` to check.
+ * @throws {TypeError} If `value` is a `null` or `undefined`.
+ * @returns {string} The `value`.
+ */
+
+function requireObjectCoercible(value) {
+  if (isNil(value)) {
+    throw new TypeError("Cannot call method on ".concat(value));
+  }
+
+  return value;
+}
+
+
+// CONCATENATED MODULE: ./node_modules/to-string-x/dist/to-string-x.esm.js
+
+var ERROR_MESSAGE = 'Cannot convert a Symbol value to a string';
+var castString = ERROR_MESSAGE.constructor;
+/**
+ * The abstract operation ToString converts argument to a value of type String.
+ *
+ * @param {*} [value] - The value to convert to a string.
+ * @throws {TypeError} If `value` is a Symbol.
+ * @returns {string} The converted value.
+ */
+
+function ToString(value) {
+  if (is_symbol_default()(value)) {
+    throw new TypeError(ERROR_MESSAGE);
+  }
+
+  return castString(value);
+}
+
+
+// CONCATENATED MODULE: ./node_modules/require-coercible-to-string-x/dist/require-coercible-to-string-x.esm.js
+
+
+/**
+ * This method requires an argument is corecible then converts using ToString.
+ *
+ * @param {*} [value] - The value to converted to a string.
+ * @throws {TypeError} If value is null or undefined.
+ * @returns {string} The value as a string.
+ */
+
+function requireCoercibleToString(value) {
+  return ToString(requireObjectCoercible(value));
+}
+
+
+// CONCATENATED MODULE: ./node_modules/white-space-x/dist/white-space-x.esm.js
+/**
+ * A record of a white space character.
+ *
+ * @typedef {object} CharRecord
+ * @property {number} code - The character code.
+ * @property {string} description - A description of the character.
+ * @property {boolean} es5 - Whether the spec lists this as a white space.
+ * @property {boolean} es2015 - Whether the spec lists this as a white space.
+ * @property {boolean} es2016 - Whether the spec lists this as a white space.
+ * @property {boolean} es2017 - Whether the spec lists this as a white space.
+ * @property {boolean} es2018 - Whether the spec lists this as a white space.
+ * @property {string} string - The character string.
+ */
+
+/**
+ * An array of the whitespace char codes, string, descriptions and language
+ * presence in the specifications.
+ *
+ * @type Array.<CharRecord>
+ */
+var list = [{
+  code: 0x0009,
+  description: 'Tab',
+  es5: true,
+  es2015: true,
+  es2016: true,
+  es2017: true,
+  es2018: true,
+  string: "\t"
+}, {
+  code: 0x000a,
+  description: 'Line Feed',
+  es5: true,
+  es2015: true,
+  es2016: true,
+  es2017: true,
+  es2018: true,
+  string: "\n"
+}, {
+  code: 0x000b,
+  description: 'Vertical Tab',
+  es5: true,
+  es2015: true,
+  es2016: true,
+  es2017: true,
+  es2018: true,
+  string: "\x0B"
+}, {
+  code: 0x000c,
+  description: 'Form Feed',
+  es5: true,
+  es2015: true,
+  es2016: true,
+  es2017: true,
+  es2018: true,
+  string: "\f"
+}, {
+  code: 0x000d,
+  description: 'Carriage Return',
+  es5: true,
+  es2015: true,
+  es2016: true,
+  es2017: true,
+  es2018: true,
+  string: "\r"
+}, {
+  code: 0x0020,
+  description: 'Space',
+  es5: true,
+  es2015: true,
+  es2016: true,
+  es2017: true,
+  es2018: true,
+  string: " "
+},
+/*
+{
+  code: 0x0085,
+  description: 'Next line',
+  es5: false,
+  es2015: false,
+  es2016: false,
+  es2017: false,
+  es2018: false,
+  string: '\u0085'
+}
+*/
+{
+  code: 0x00a0,
+  description: 'No-break space',
+  es5: true,
+  es2015: true,
+  es2016: true,
+  es2017: true,
+  es2018: true,
+  string: "\xA0"
+}, {
+  code: 0x1680,
+  description: 'Ogham space mark',
+  es5: true,
+  es2015: true,
+  es2016: true,
+  es2017: true,
+  es2018: true,
+  string: "\u1680"
+}, {
+  code: 0x180e,
+  description: 'Mongolian vowel separator',
+  es5: true,
+  es2015: true,
+  es2016: true,
+  es2017: false,
+  es2018: false,
+  string: "\u180E"
+}, {
+  code: 0x2000,
+  description: 'En quad',
+  es5: true,
+  es2015: true,
+  es2016: true,
+  es2017: true,
+  es2018: true,
+  string: "\u2000"
+}, {
+  code: 0x2001,
+  description: 'Em quad',
+  es5: true,
+  es2015: true,
+  es2016: true,
+  es2017: true,
+  es2018: true,
+  string: "\u2001"
+}, {
+  code: 0x2002,
+  description: 'En space',
+  es5: true,
+  es2015: true,
+  es2016: true,
+  es2017: true,
+  es2018: true,
+  string: "\u2002"
+}, {
+  code: 0x2003,
+  description: 'Em space',
+  es5: true,
+  es2015: true,
+  es2016: true,
+  es2017: true,
+  es2018: true,
+  string: "\u2003"
+}, {
+  code: 0x2004,
+  description: 'Three-per-em space',
+  es5: true,
+  es2015: true,
+  es2016: true,
+  es2017: true,
+  es2018: true,
+  string: "\u2004"
+}, {
+  code: 0x2005,
+  description: 'Four-per-em space',
+  es5: true,
+  es2015: true,
+  es2016: true,
+  es2017: true,
+  es2018: true,
+  string: "\u2005"
+}, {
+  code: 0x2006,
+  description: 'Six-per-em space',
+  es5: true,
+  es2015: true,
+  es2016: true,
+  es2017: true,
+  es2018: true,
+  string: "\u2006"
+}, {
+  code: 0x2007,
+  description: 'Figure space',
+  es5: true,
+  es2015: true,
+  es2016: true,
+  es2017: true,
+  es2018: true,
+  string: "\u2007"
+}, {
+  code: 0x2008,
+  description: 'Punctuation space',
+  es5: true,
+  es2015: true,
+  es2016: true,
+  es2017: true,
+  es2018: true,
+  string: "\u2008"
+}, {
+  code: 0x2009,
+  description: 'Thin space',
+  es5: true,
+  es2015: true,
+  es2016: true,
+  es2017: true,
+  es2018: true,
+  string: "\u2009"
+}, {
+  code: 0x200a,
+  description: 'Hair space',
+  es5: true,
+  es2015: true,
+  es2016: true,
+  es2017: true,
+  es2018: true,
+  string: "\u200A"
+},
+/*
+{
+  code: 0x200b,
+  description: 'Zero width space',
+  es5: false,
+  es2015: false,
+  es2016: false,
+  es2017: false,
+  es2018: false,
+  string: '\u200b'
+},
+*/
+{
+  code: 0x2028,
+  description: 'Line separator',
+  es5: true,
+  es2015: true,
+  es2016: true,
+  es2017: true,
+  es2018: true,
+  string: "\u2028"
+}, {
+  code: 0x2029,
+  description: 'Paragraph separator',
+  es5: true,
+  es2015: true,
+  es2016: true,
+  es2017: true,
+  es2018: true,
+  string: "\u2029"
+}, {
+  code: 0x202f,
+  description: 'Narrow no-break space',
+  es5: true,
+  es2015: true,
+  es2016: true,
+  es2017: true,
+  es2018: true,
+  string: "\u202F"
+}, {
+  code: 0x205f,
+  description: 'Medium mathematical space',
+  es5: true,
+  es2015: true,
+  es2016: true,
+  es2017: true,
+  es2018: true,
+  string: "\u205F"
+}, {
+  code: 0x3000,
+  description: 'Ideographic space',
+  es5: true,
+  es2015: true,
+  es2016: true,
+  es2017: true,
+  es2018: true,
+  string: "\u3000"
+}, {
+  code: 0xfeff,
+  description: 'Byte Order Mark',
+  es5: true,
+  es2015: true,
+  es2016: true,
+  es2017: true,
+  es2018: true,
+  string: "\uFEFF"
+}];
+/**
+ * A string of the ES5 to ES2016 whitespace characters.
+ *
+ * @type string
+ */
+
+var stringES2016 = '';
+/**
+ * A string of the ES2017 to ES2018 whitespace characters.
+ *
+ * @type string
+ */
+
+var stringES2018 = '';
+var white_space_x_esm_length = list.length;
+
+for (var i = 0; i < white_space_x_esm_length; i += 1) {
+  if (list[i].es2016) {
+    stringES2016 += list[i].string;
+  }
+
+  if (list[i].es2018) {
+    stringES2018 += list[i].string;
+  }
+}
+
+var string2018 = stringES2018;
+/* harmony default export */ var white_space_x_esm = (string2018);
+var string2016 = stringES2016;
+
+
+// CONCATENATED MODULE: ./node_modules/trim-left-x/dist/trim-left-x.esm.js
+
+
+var EMPTY_STRING = '';
+var RegExpCtr = /none/.constructor;
+var reLeft2016 = new RegExpCtr("^[".concat(string2016, "]+"));
+var reLeft = new RegExpCtr("^[".concat(white_space_x_esm, "]+"));
+var replace = EMPTY_STRING.replace;
+/**
+ * This method removes whitespace from the left end of a string. (ES2016).
+ *
+ * @param {string} [string] - The string to trim the left end whitespace from.
+ * @throws {TypeError} If string is null or undefined or not coercible.
+ * @returns {string} The left trimmed string.
+ */
+
+function trimLeft2016(string) {
+  return replace.call(requireCoercibleToString(string), reLeft2016, EMPTY_STRING);
+}
+/**
+ * This method removes whitespace from the left end of a string. (ES2018).
+ *
+ * @param {string} [string] - The string to trim the left end whitespace from.
+ * @throws {TypeError} If string is null or undefined or not coercible.
+ * @returns {string} The left trimmed string.
+ */
+
+function trimLeft2018(string) {
+  return replace.call(requireCoercibleToString(string), reLeft, EMPTY_STRING);
+}
+
+
+// CONCATENATED MODULE: ./node_modules/trim-right-x/dist/trim-right-x.esm.js
+
+
+var trim_right_x_esm_EMPTY_STRING = '';
+var trim_right_x_esm_RegExpCtr = /none/.constructor;
+var reRight2016 = new trim_right_x_esm_RegExpCtr("[".concat(string2016, "]+$"));
+var reRight2018 = new trim_right_x_esm_RegExpCtr("[".concat(white_space_x_esm, "]+$"));
+var trim_right_x_esm_replace = trim_right_x_esm_EMPTY_STRING.replace;
+/**
+ * This method removes whitespace from the right end of a string. (ES2016).
+ *
+ * @param {string} [string] - The string to trim the right end whitespace from.
+ * @throws {TypeError} If string is null or undefined or not coercible.
+ * @returns {string} The right trimmed string.
+ */
+
+function trimRight2016(string) {
+  return trim_right_x_esm_replace.call(requireCoercibleToString(string), reRight2016, trim_right_x_esm_EMPTY_STRING);
+}
+/**
+ * This method removes whitespace from the right end of a string. (ES2018).
+ *
+ * @param {string} [string] - The string to trim the right end whitespace from.
+ * @throws {TypeError} If string is null or undefined or not coercible.
+ * @returns {string} The right trimmed string.
+ */
+
+function trimRight2018(string) {
+  return trim_right_x_esm_replace.call(requireCoercibleToString(string), reRight2018, trim_right_x_esm_EMPTY_STRING);
+}
+
+
+// CONCATENATED MODULE: ./node_modules/trim-x/dist/trim-x.esm.js
+
+
+/**
+ * This method removes whitespace from the left and right end of a string.
+ * (ES2016).
+ *
+ * @param {string} [string] - The string to trim the whitespace from.
+ * @throws {TypeError} If string is null or undefined or not coercible.
+ * @returns {string} The trimmed string.
+ */
+
+function trim2016(string) {
+  return trimLeft2016(trimRight2016(string));
+}
+/**
+ * This method removes whitespace from the left and right end of a string.
+ * (ES2018).
+ *
+ * @param {string} [string] - The string to trim the whitespace from.
+ * @throws {TypeError} If string is null or undefined or not coercible.
+ * @returns {string} The trimmed string.
+ */
+
+function trim2018(string) {
+  return trimLeft2018(trimRight2018(string));
+}
+
+
+// CONCATENATED MODULE: ./node_modules/normalize-space-x/dist/normalize-space-x.esm.js
+
+
+var SPACE = ' ';
+var normalize_space_x_esm_RegExpCtr = /none/.constructor;
+var reNormalize2016 = new normalize_space_x_esm_RegExpCtr("[".concat(string2016, "]+"), 'g');
+var reNormalize2018 = new normalize_space_x_esm_RegExpCtr("[".concat(white_space_x_esm, "]+"), 'g');
+var normalize_space_x_esm_replace = SPACE.replace;
+/**
+ * This method strips leading and trailing white-space from a string,
+ * replaces sequences of whitespace characters by a single space,
+ * and returns the resulting string. (ES2016).
+ *
+ * @param {string} [string] - The string to be normalized.
+ * @throws {TypeError} If string is null or undefined or not coercible.
+ * @returns {string} The normalized string.
+ */
+
+function normalizeSpace2016(string) {
+  return normalize_space_x_esm_replace.call(trim2016(string), reNormalize2016, SPACE);
+}
+/**
+ * This method strips leading and trailing white-space from a string,
+ * replaces sequences of whitespace characters by a single space,
+ * and returns the resulting string. (ES2018).
+ *
+ * @param {string} [string] - The string to be normalized.
+ * @throws {TypeError} If string is null or undefined or not coercible.
+ */
+
+function normalizeSpace2018(string) {
+  return normalize_space_x_esm_replace.call(trim2018(string), reNormalize2018, SPACE);
+}
+
+
+// CONCATENATED MODULE: ./node_modules/replace-comments-x/dist/replace-comments-x.esm.js
+
+
+var replace_comments_x_esm_EMPTY_STRING = '';
+var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/gm;
+var replace_comments_x_esm_replace = replace_comments_x_esm_EMPTY_STRING.replace;
+/**
+ * This method replaces comments in a string.
+ *
+ * @param {string} [string] - The string to be stripped.
+ * @param {string} [replacement=''] - The string to be used as a replacement.
+ * @throws {TypeError} If string is null or undefined or not coercible.
+ * @throws {TypeError} If replacement is not coercible.
+ * @returns {string} The new string with the comments replaced.
+ */
+
+function replaceComments(string, replacement) {
+  return replace_comments_x_esm_replace.call(requireCoercibleToString(string), STRIP_COMMENTS, arguments.length > 1 ? ToString(replacement) : replace_comments_x_esm_EMPTY_STRING);
+}
+
+
+// CONCATENATED MODULE: ./dist/is-function-x.esm.js
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return isFunction; });
+var is_function_x_esm_this = undefined;
+
+function is_function_x_esm_newArrowCheck(innerThis, boundThis) { if (innerThis !== boundThis) { throw new TypeError("Cannot instantiate an arrow function"); } }
+
+
+
+
+
+
+
+
+
+var is_function_x_esm_SPACE = ' ';
 var fToString = Function.prototype.toString;
 var funcTag = '[object Function]';
 var genTag = '[object GeneratorFunction]';
 var asyncTag = '[object AsyncFunction]';
 var ctrRx = /^class /;
 var test = ctrRx.test;
-var hasNativeClass = (0, _attemptX.default)(function () {
-  _newArrowCheck(this, _this);
+var hasNativeClass = attempt(function () {
+  is_function_x_esm_newArrowCheck(this, is_function_x_esm_this);
 
   /* eslint-disable-next-line no-new-func */
   return Function('"use strict"; return class My {};')();
-}.bind(void 0)).threw === false;
+}.bind(undefined)).threw === false;
 
 var testClassstring = function _testClassstring(value) {
-  return test.call(ctrRx, (0, _normalizeSpaceX.default)((0, _replaceCommentsX.default)(fToString.call(value), ' ')));
+  return test.call(ctrRx, normalizeSpace2018(replaceComments(fToString.call(value), is_function_x_esm_SPACE)));
 };
 
 var isES6ClassFn = function isES6ClassFunc(value) {
-  var result = (0, _attemptX.default)(testClassstring, value);
+  var result = attempt(testClassstring, value);
   return result.threw === false && result.value;
 };
 /**
@@ -219,7 +1001,7 @@ var tryFuncToString = function funcToString(value, allowClass) {
     return false;
   }
 
-  return _attemptX.default.call(value, fToString).threw === false;
+  return attempt.call(value, fToString).threw === false;
 };
 /**
  * Checks if `value` is classified as a `Function` object.
@@ -232,456 +1014,23 @@ var tryFuncToString = function funcToString(value, allowClass) {
 
 
 function isFunction(value, allowClass) {
-  if ((0, _isPrimitive.default)(value)) {
+  if (is_primitive_default()(value)) {
     return false;
   }
 
-  if (_hasToStringTagX.default) {
-    return tryFuncToString(value, (0, _toBooleanX.default)(allowClass));
+  if (has_to_string_tag_x_esm) {
+    return tryFuncToString(value, toBoolean(allowClass));
   }
 
-  if (hasNativeClass && (0, _isFalseyX.default)(allowClass) && isES6ClassFn(value)) {
+  if (hasNativeClass && isFalsey(allowClass) && isES6ClassFn(value)) {
     return false;
   }
 
-  var strTag = (0, _toStringTagX.default)(value);
+  var strTag = toStringTag(value);
   return strTag === funcTag || strTag === genTag || strTag === asyncTag;
 }
 
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global) {/*!
-{
-  "copywrite": "Copyright (c) 2017-present",
-  "date": "2019-07-10T17:02:08.935Z",
-  "describe": "",
-  "description": "Invokes function, returning an object of the results.",
-  "file": "attempt-x.min.js",
-  "hash": "2af3ad3db8d083ebeb34",
-  "license": "MIT",
-  "version": "2.0.0"
-}
-*/
-!function(e,t){ true?module.exports=t():undefined}(function(){"use strict";return"undefined"!=typeof self?self:"undefined"!=typeof window?window:"undefined"!=typeof global?global:Function("return this")()}(),function(){return function(e){var t={};function n(r){if(t[r])return t[r].exports;var o=t[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=e,n.c=t,n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var o in e)n.d(r,o,function(t){return e[t]}.bind(null,o));return r},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=0)}([function(e,t,n){"use strict";e.exports=function(e){try{for(var t=arguments.length,n=new Array(t>1?t-1:0),r=1;r<t;r++)n[r-1]=arguments[r];return{threw:!1,value:e.apply(this,n)}}catch(e){return{threw:!0,value:e}}}}])});
-//# sourceMappingURL=attempt-x.min.js.map
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(0)))
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(global) {/*!
-{
-  "copywrite": "Copyright (c) 2017-present",
-  "date": "2019-07-10T15:56:42.710Z",
-  "describe": "",
-  "description": "Converts argument to a value of type Boolean.",
-  "file": "to-boolean-x.min.js",
-  "hash": "f51186388a7132acc328",
-  "license": "MIT",
-  "version": "2.0.1"
-}
-*/
-!function(e,t){ true?module.exports=t():undefined}(function(){"use strict";return"undefined"!=typeof self?self:"undefined"!=typeof window?window:"undefined"!=typeof global?global:Function("return this")()}(),function(){return function(e){var t={};function n(o){if(t[o])return t[o].exports;var r=t[o]={i:o,l:!1,exports:{}};return e[o].call(r.exports,r,r.exports,n),r.l=!0,r.exports}return n.m=e,n.c=t,n.d=function(e,t,o){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:o})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var o=Object.create(null);if(n.r(o),Object.defineProperty(o,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var r in e)n.d(o,r,function(t){return e[t]}.bind(null,r));return o},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=0)}([function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=function(e){return!!e}}])});
-//# sourceMappingURL=to-boolean-x.min.js.map
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(0)))
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(global) {/*!
-{
-  "copywrite": "Copyright (c) 2017-present",
-  "date": "2019-07-11T00:51:04.589Z",
-  "describe": "",
-  "description": "Test if a given value is falsey.",
-  "file": "is-falsey-x.min.js",
-  "hash": "dcbee91e6d2dd20e4b40",
-  "license": "MIT",
-  "version": "2.0.1"
-}
-*/
-!function(e,t){ true?module.exports=t():undefined}(function(){"use strict";return"undefined"!=typeof self?self:"undefined"!=typeof window?window:"undefined"!=typeof global?global:Function("return this")()}(),function(){return function(e){var t={};function n(r){if(t[r])return t[r].exports;var o=t[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=e,n.c=t,n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var o in e)n.d(r,o,function(t){return e[t]}.bind(null,o));return r},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=0)}([function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=function(e){return!1===(0,o.default)(e)};var r,o=(r=n(1))&&r.__esModule?r:{default:r}},function(e,t,n){(function(t){
-/*!
-{
-  "copywrite": "Copyright (c) 2017-present",
-  "date": "2019-07-10T15:56:42.710Z",
-  "describe": "",
-  "description": "Converts argument to a value of type Boolean.",
-  "file": "to-boolean-x.min.js",
-  "hash": "f51186388a7132acc328",
-  "license": "MIT",
-  "version": "2.0.1"
-}
-*/
-(function(){"use strict";"undefined"!=typeof self?self:"undefined"!=typeof window?window:void 0!==t||Function("return this")()})(),e.exports=function(e){var t={};function n(r){if(t[r])return t[r].exports;var o=t[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=e,n.c=t,n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var o in e)n.d(r,o,function(t){return e[t]}.bind(null,o));return r},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=0)}([function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=function(e){return!!e}}])}).call(this,n(2))},function(e,t){var n;n=function(){return this}();try{n=n||new Function("return this")()}catch(e){"object"==typeof window&&(n=window)}e.exports=n}])});
-//# sourceMappingURL=is-falsey-x.min.js.map
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(0)))
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(global) {/*!
-{
-  "copywrite": "Copyright (c) 2015-present",
-  "date": "2019-07-10T12:19:01.780Z",
-  "describe": "",
-  "description": "Get an object's ES6 @@toStringTag.",
-  "file": "to-string-tag-x.min.js",
-  "hash": "bbd0881f303693b31d29",
-  "license": "MIT",
-  "version": "2.0.3"
-}
-*/
-!function(e,t){ true?module.exports=t():undefined}(function(){"use strict";return"undefined"!=typeof self?self:"undefined"!=typeof window?window:"undefined"!=typeof global?global:Function("return this")()}(),function(){return function(e){var t={};function n(r){if(t[r])return t[r].exports;var o=t[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=e,n.c=t,n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var o in e)n.d(r,o,function(t){return e[t]}.bind(null,o));return r},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=0)}([function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=function(e){if(null===e)return"[object Null]";if(void 0===e)return"[object Undefined]";return r.call(e)};var r={}.toString}])});
-//# sourceMappingURL=to-string-tag-x.min.js.map
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(0)))
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(global) {/*!
-{
-  "copywrite": "Copyright (c) 2015-2017",
-  "date": "2019-07-10T20:34:46.339Z",
-  "describe": "",
-  "description": "Tests if ES6 @@toStringTag is supported.",
-  "file": "has-to-string-tag-x.min.js",
-  "hash": "f1b285bb1966087fa4cb",
-  "license": "MIT",
-  "version": "2.0.0"
-}
-*/
-!function(e,t){ true?module.exports=t():undefined}(function(){"use strict";return"undefined"!=typeof self?self:"undefined"!=typeof window?window:"undefined"!=typeof global?global:Function("return this")()}(),function(){return function(e){var t={};function n(o){if(t[o])return t[o].exports;var r=t[o]={i:o,l:!1,exports:{}};return e[o].call(r.exports,r,r.exports,n),r.l=!0,r.exports}return n.m=e,n.c=t,n.d=function(e,t,o){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:o})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var o=Object.create(null);if(n.r(o),Object.defineProperty(o,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var r in e)n.d(o,r,function(t){return e[t]}.bind(null,r));return o},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=0)}([function(e,t,n){"use strict";var o;function r(e){return(r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e})(e)}Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;var u=((o=n(1))&&o.__esModule?o:{default:o}).default&&"symbol"===r(Symbol.toStringTag);t.default=u},function(e,t,n){(function(t){
-/*!
-{
-  "copywrite": "Copyright (c) 2015-present",
-  "date": "2019-07-10T17:50:14.483Z",
-  "describe": "",
-  "description": "Tests if ES6 Symbol is supported.",
-  "file": "has-symbol-support-x.min.js",
-  "hash": "6488216cfbdf5b4d5fba",
-  "license": "MIT",
-  "version": "2.0.0"
-}
-*/
-(function(){"use strict";"undefined"!=typeof self?self:"undefined"!=typeof window?window:void 0!==t||Function("return this")()})(),e.exports=function(e){var t={};function n(o){if(t[o])return t[o].exports;var r=t[o]={i:o,l:!1,exports:{}};return e[o].call(r.exports,r,r.exports,n),r.l=!0,r.exports}return n.m=e,n.c=t,n.d=function(e,t,o){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:o})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var o=Object.create(null);if(n.r(o),Object.defineProperty(o,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var r in e)n.d(o,r,function(t){return e[t]}.bind(null,r));return o},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=0)}([function(e,t,n){"use strict";function o(e){return(o="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e})(e)}Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;var r="function"==typeof Symbol&&"symbol"===o(Symbol(""));t.default=r}])}).call(this,n(2))},function(e,t){var n;n=function(){return this}();try{n=n||new Function("return this")()}catch(e){"object"==typeof window&&(n=window)}e.exports=n}])});
-//# sourceMappingURL=has-to-string-tag-x.min.js.map
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(0)))
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/*!
- * is-primitive <https://github.com/jonschlinkert/is-primitive>
- *
- * Copyright (c) 2014-present, Jon Schlinkert.
- * Released under the MIT License.
- */
-
-
-
-module.exports = function isPrimitive(val) {
-  if (typeof val === 'object') {
-    return val === null;
-  }
-  return typeof val !== 'function';
-};
-
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(global) {/*!
-{
-  "copywrite": "Copyright (c) 2017",
-  "date": "2019-07-11T07:32:18.934Z",
-  "describe": "",
-  "description": "Trims and replaces sequences of whitespace characters by a single space.",
-  "file": "normalize-space-x.min.js",
-  "hash": "63a5ba90151e850cb72c",
-  "license": "MIT",
-  "version": "4.0.1"
-}
-*/
-!function(e,t){ true?module.exports=t():undefined}(function(){"use strict";return"undefined"!=typeof self?self:"undefined"!=typeof window?window:"undefined"!=typeof global?global:Function("return this")()}(),function(){return function(e){var t={};function n(r){if(t[r])return t[r].exports;var o=t[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=e,n.c=t,n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var o in e)n.d(r,o,function(t){return e[t]}.bind(null,o));return r},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=1)}([function(e,t){var n;n=function(){return this}();try{n=n||new Function("return this")()}catch(e){"object"==typeof window&&(n=window)}e.exports=n},function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.normalizeSpace2016=function(e){return f.call((0,r.trim2016)(e),u," ")},t.default=function(e){return f.call((0,r.default)(e),c," ")};var r=i(n(2)),o=i(n(3));function i(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var n in e)if(Object.prototype.hasOwnProperty.call(e,n)){var r=Object.defineProperty&&Object.getOwnPropertyDescriptor?Object.getOwnPropertyDescriptor(e,n):{};r.get||r.set?Object.defineProperty(t,n,r):t[n]=e[n]}return t.default=e,t}var s=/none/.constructor,u=new s("[".concat(o.string2016,"]+"),"g"),c=new s("[".concat(o.default,"]+"),"g"),f="".replace},function(e,t,n){(function(t){
-/*!
-{
-  "copywrite": "Copyright (c) 2017",
-  "date": "2019-07-10T23:09:25.011Z",
-  "describe": "",
-  "description": "This method removes whitespace from the left and right end of a string.",
-  "file": "trim-x.min.js",
-  "hash": "277bb29c93b6448aafc7",
-  "license": "MIT",
-  "version": "4.0.0"
-}
-*/
-(function(){"use strict";"undefined"!=typeof self?self:"undefined"!=typeof window?window:void 0!==t||Function("return this")()})(),e.exports=function(e){var t={};function n(r){if(t[r])return t[r].exports;var o=t[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=e,n.c=t,n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var o in e)n.d(r,o,function(t){return e[t]}.bind(null,o));return r},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=1)}([function(e,t){var n;n=function(){return this}();try{n=n||new Function("return this")()}catch(e){"object"==typeof window&&(n=window)}e.exports=n},function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.trim2016=function(e){return(0,r.trimLeft2016)((0,o.trimRight2016)(e))},t.default=function(e){return(0,r.default)((0,o.default)(e))};var r=i(n(2)),o=i(n(3));function i(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var n in e)if(Object.prototype.hasOwnProperty.call(e,n)){var r=Object.defineProperty&&Object.getOwnPropertyDescriptor?Object.getOwnPropertyDescriptor(e,n):{};r.get||r.set?Object.defineProperty(t,n,r):t[n]=e[n]}return t.default=e,t}},function(e,t,n){(function(t){
-/*!
-{
-  "copywrite": "Copyright (c) 2017",
-  "date": "2019-07-10T22:36:42.380Z",
-  "describe": "",
-  "description": "This method removes whitespace from the left end of a string.",
-  "file": "trim-left-x.min.js",
-  "hash": "aa784ac924e44b41209c",
-  "license": "MIT",
-  "version": "4.0.1"
-}
-*/
-(function(){"use strict";"undefined"!=typeof self?self:"undefined"!=typeof window?window:void 0!==t||Function("return this")()})(),e.exports=function(e){var t={};function n(r){if(t[r])return t[r].exports;var o=t[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=e,n.c=t,n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var o in e)n.d(r,o,function(t){return e[t]}.bind(null,o));return r},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=1)}([function(e,t){var n;n=function(){return this}();try{n=n||new Function("return this")()}catch(e){"object"==typeof window&&(n=window)}e.exports=n},function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.trimLeft2016=function(e){return f.call((0,o.default)(e),u,"")},t.default=function(e){return f.call((0,o.default)(e),c,"")};var r,o=(r=n(2))&&r.__esModule?r:{default:r},i=function(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var n in e)if(Object.prototype.hasOwnProperty.call(e,n)){var r=Object.defineProperty&&Object.getOwnPropertyDescriptor?Object.getOwnPropertyDescriptor(e,n):{};r.get||r.set?Object.defineProperty(t,n,r):t[n]=e[n]}return t.default=e,t}(n(3)),s=/none/.constructor,u=new s("^[".concat(i.string2016,"]+")),c=new s("^[".concat(i.default,"]+")),f="".replace},function(e,t,n){(function(t){
-/*!
-{
-  "copywrite": "Copyright (c) 2017-present",
-  "date": "2019-07-10T19:57:07.334Z",
-  "describe": "",
-  "description": "Requires an argument is corecible then converts using ToString.",
-  "file": "require-coercible-to-string-x.min.js",
-  "hash": "4c0a223c2f880366be07",
-  "license": "MIT",
-  "version": "2.0.0"
-}
-*/
-(function(){"use strict";"undefined"!=typeof self?self:"undefined"!=typeof window?window:void 0!==t||Function("return this")()})(),e.exports=function(e){var t={};function n(r){if(t[r])return t[r].exports;var o=t[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=e,n.c=t,n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var o in e)n.d(r,o,function(t){return e[t]}.bind(null,o));return r},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=1)}([function(e,t){var n;n=function(){return this}();try{n=n||new Function("return this")()}catch(e){"object"==typeof window&&(n=window)}e.exports=n},function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=function(e){return(0,o.default)((0,r.default)(e))};var r=i(n(2)),o=i(n(3));function i(e){return e&&e.__esModule?e:{default:e}}},function(e,t,n){(function(t){
-/*!
-{
-  "copywrite": "Copyright (c) 2015-present",
-  "date": "2019-07-10T19:41:32.687Z",
-  "describe": "",
-  "description": "ES6-compliant shim for RequireObjectCoercible.",
-  "file": "require-object-coercible-x.min.js",
-  "hash": "e0a246211b3fc1c03415",
-  "license": "MIT",
-  "version": "2.0.0"
-}
-*/
-(function(){"use strict";"undefined"!=typeof self?self:"undefined"!=typeof window?window:void 0!==t||Function("return this")()})(),e.exports=function(e){var t={};function n(r){if(t[r])return t[r].exports;var o=t[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=e,n.c=t,n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var o in e)n.d(r,o,function(t){return e[t]}.bind(null,o));return r},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=0)}([function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=function(e){if((0,o.default)(e))throw new TypeError("Cannot call method on ".concat(e));return e};var r,o=(r=n(1))&&r.__esModule?r:{default:r}},function(e,t,n){(function(t){
-/*!
-{
-  "copywrite": "Copyright (c) 2015-present",
-  "date": "2019-07-10T12:31:27.126Z",
-  "describe": "",
-  "description": "Checks if `value` is `null` or `undefined`.",
-  "file": "is-nil-x.min.js",
-  "hash": "e4915937853cc4a715ce",
-  "license": "MIT",
-  "version": "2.0.0"
-}
-*/
-(function(){"use strict";"undefined"!=typeof self?self:"undefined"!=typeof window?window:void 0!==t||Function("return this")()})(),e.exports=function(e){var t={};function n(r){if(t[r])return t[r].exports;var o=t[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=e,n.c=t,n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var o in e)n.d(r,o,function(t){return e[t]}.bind(null,o));return r},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=0)}([function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=function(e){return null==e}}])}).call(this,n(2))},function(e,t){var n;n=function(){return this}();try{n=n||new Function("return this")()}catch(e){"object"==typeof window&&(n=window)}e.exports=n}])}).call(this,n(0))},function(e,t,n){(function(t){
-/*!
-{
-  "copywrite": "Copyright (c) 2015-present",
-  "date": "2019-07-10T12:22:07.292Z",
-  "describe": "",
-  "description": "ES6-compliant shim for ToString.",
-  "file": "to-string-x.min.js",
-  "hash": "ee3283c5460ef8f2ce4d",
-  "license": "MIT",
-  "version": "2.0.3"
-}
-*/
-(function(){"use strict";"undefined"!=typeof self?self:"undefined"!=typeof window?window:void 0!==t||Function("return this")()})(),e.exports=function(e){var t={};function n(r){if(t[r])return t[r].exports;var o=t[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=e,n.c=t,n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var o in e)n.d(r,o,function(t){return e[t]}.bind(null,o));return r},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=0)}([function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=function(e){if((0,o.default)(e))throw new TypeError("Cannot convert a Symbol value to a string");return"".constructor(e)};var r,o=(r=n(1))&&r.__esModule?r:{default:r}},function(e,t,n){"use strict";var r=Object.prototype.toString;if(n(2)()){var o=Symbol.prototype.toString,i=/^Symbol\(.*\)$/;e.exports=function(e){if("symbol"==typeof e)return!0;if("[object Symbol]"!==r.call(e))return!1;try{return function(e){return"symbol"==typeof e.valueOf()&&i.test(o.call(e))}(e)}catch(e){return!1}}}else e.exports=function(e){return!1}},function(e,t,n){"use strict";(function(t){var r=t.Symbol,o=n(4);e.exports=function(){return"function"==typeof r&&"function"==typeof Symbol&&"symbol"==typeof r("foo")&&"symbol"==typeof Symbol("bar")&&o()}}).call(this,n(3))},function(e,t){var n;n=function(){return this}();try{n=n||new Function("return this")()}catch(e){"object"==typeof window&&(n=window)}e.exports=n},function(e,t,n){"use strict";e.exports=function(){if("function"!=typeof Symbol||"function"!=typeof Object.getOwnPropertySymbols)return!1;if("symbol"==typeof Symbol.iterator)return!0;var e={},t=Symbol("test"),n=Object(t);if("string"==typeof t)return!1;if("[object Symbol]"!==Object.prototype.toString.call(t))return!1;if("[object Symbol]"!==Object.prototype.toString.call(n))return!1;for(t in e[t]=42,e)return!1;if("function"==typeof Object.keys&&0!==Object.keys(e).length)return!1;if("function"==typeof Object.getOwnPropertyNames&&0!==Object.getOwnPropertyNames(e).length)return!1;var r=Object.getOwnPropertySymbols(e);if(1!==r.length||r[0]!==t)return!1;if(!Object.prototype.propertyIsEnumerable.call(e,t))return!1;if("function"==typeof Object.getOwnPropertyDescriptor){var o=Object.getOwnPropertyDescriptor(e,t);if(42!==o.value||!0!==o.enumerable)return!1}return!0}}])}).call(this,n(0))}])}).call(this,n(0))},function(e,t,n){(function(t){
-/*!
-{
-  "copywrite": "Copyright (c) 2015-present",
-  "date": "2019-07-10T22:27:27.494Z",
-  "describe": "",
-  "description": "List of ECMAScript white space characters.",
-  "file": "white-space-x.min.js",
-  "hash": "fe69807cce4b9e3da193",
-  "license": "MIT",
-  "version": "4.0.1"
-}
-*/
-(function(){"use strict";"undefined"!=typeof self?self:"undefined"!=typeof window?window:void 0!==t||Function("return this")()})(),e.exports=function(e){var t={};function n(r){if(t[r])return t[r].exports;var o=t[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=e,n.c=t,n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var o in e)n.d(r,o,function(t){return e[t]}.bind(null,o));return r},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=0)}([function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.string2016=t.default=t.list=void 0;var r=[{code:9,description:"Tab",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:"\t"},{code:10,description:"Line Feed",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:"\n"},{code:11,description:"Vertical Tab",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:"\v"},{code:12,description:"Form Feed",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:"\f"},{code:13,description:"Carriage Return",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:"\r"},{code:32,description:"Space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:160,description:"No-break space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:5760,description:"Ogham space mark",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:6158,description:"Mongolian vowel separator",es5:!0,es2015:!0,es2016:!0,es2017:!1,es2018:!1,string:"᠎"},{code:8192,description:"En quad",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8193,description:"Em quad",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8194,description:"En space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8195,description:"Em space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8196,description:"Three-per-em space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8197,description:"Four-per-em space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8198,description:"Six-per-em space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8199,description:"Figure space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8200,description:"Punctuation space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8201,description:"Thin space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8202,description:"Hair space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8232,description:"Line separator",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:"\u2028"},{code:8233,description:"Paragraph separator",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:"\u2029"},{code:8239,description:"Narrow no-break space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8287,description:"Medium mathematical space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:12288,description:"Ideographic space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:"　"},{code:65279,description:"Byte Order Mark",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:"\ufeff"}];t.list=r;for(var o="",i="",s=r.length,u=0;u<s;u+=1)r[u].es2016&&(o+=r[u].string),r[u].es2018&&(i+=r[u].string);var c=i;t.default=c;var f=o;t.string2016=f}])}).call(this,n(0))}])}).call(this,n(0))},function(e,t,n){(function(t){
-/*!
-{
-  "copywrite": "Copyright (c) 2017",
-  "date": "2019-07-10T22:56:57.480Z",
-  "describe": "",
-  "description": "This method removes whitespace from the right end of a string.",
-  "file": "trim-right-x.min.js",
-  "hash": "32de1cc168afeeb5e42e",
-  "license": "MIT",
-  "version": "4.0.0"
-}
-*/
-(function(){"use strict";"undefined"!=typeof self?self:"undefined"!=typeof window?window:void 0!==t||Function("return this")()})(),e.exports=function(e){var t={};function n(r){if(t[r])return t[r].exports;var o=t[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=e,n.c=t,n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var o in e)n.d(r,o,function(t){return e[t]}.bind(null,o));return r},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=1)}([function(e,t){var n;n=function(){return this}();try{n=n||new Function("return this")()}catch(e){"object"==typeof window&&(n=window)}e.exports=n},function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.trimRight2016=function(e){return f.call((0,o.default)(e),u,"")},t.default=function(e){return f.call((0,o.default)(e),c,"")};var r,o=(r=n(2))&&r.__esModule?r:{default:r},i=function(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var n in e)if(Object.prototype.hasOwnProperty.call(e,n)){var r=Object.defineProperty&&Object.getOwnPropertyDescriptor?Object.getOwnPropertyDescriptor(e,n):{};r.get||r.set?Object.defineProperty(t,n,r):t[n]=e[n]}return t.default=e,t}(n(3)),s=/none/.constructor,u=new s("[".concat(i.string2016,"]+$")),c=new s("[".concat(i.default,"]+$")),f="".replace},function(e,t,n){(function(t){
-/*!
-{
-  "copywrite": "Copyright (c) 2017-present",
-  "date": "2019-07-10T19:57:07.334Z",
-  "describe": "",
-  "description": "Requires an argument is corecible then converts using ToString.",
-  "file": "require-coercible-to-string-x.min.js",
-  "hash": "4c0a223c2f880366be07",
-  "license": "MIT",
-  "version": "2.0.0"
-}
-*/
-(function(){"use strict";"undefined"!=typeof self?self:"undefined"!=typeof window?window:void 0!==t||Function("return this")()})(),e.exports=function(e){var t={};function n(r){if(t[r])return t[r].exports;var o=t[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=e,n.c=t,n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var o in e)n.d(r,o,function(t){return e[t]}.bind(null,o));return r},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=1)}([function(e,t){var n;n=function(){return this}();try{n=n||new Function("return this")()}catch(e){"object"==typeof window&&(n=window)}e.exports=n},function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=function(e){return(0,o.default)((0,r.default)(e))};var r=i(n(2)),o=i(n(3));function i(e){return e&&e.__esModule?e:{default:e}}},function(e,t,n){(function(t){
-/*!
-{
-  "copywrite": "Copyright (c) 2015-present",
-  "date": "2019-07-10T19:41:32.687Z",
-  "describe": "",
-  "description": "ES6-compliant shim for RequireObjectCoercible.",
-  "file": "require-object-coercible-x.min.js",
-  "hash": "e0a246211b3fc1c03415",
-  "license": "MIT",
-  "version": "2.0.0"
-}
-*/
-(function(){"use strict";"undefined"!=typeof self?self:"undefined"!=typeof window?window:void 0!==t||Function("return this")()})(),e.exports=function(e){var t={};function n(r){if(t[r])return t[r].exports;var o=t[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=e,n.c=t,n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var o in e)n.d(r,o,function(t){return e[t]}.bind(null,o));return r},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=0)}([function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=function(e){if((0,o.default)(e))throw new TypeError("Cannot call method on ".concat(e));return e};var r,o=(r=n(1))&&r.__esModule?r:{default:r}},function(e,t,n){(function(t){
-/*!
-{
-  "copywrite": "Copyright (c) 2015-present",
-  "date": "2019-07-10T12:31:27.126Z",
-  "describe": "",
-  "description": "Checks if `value` is `null` or `undefined`.",
-  "file": "is-nil-x.min.js",
-  "hash": "e4915937853cc4a715ce",
-  "license": "MIT",
-  "version": "2.0.0"
-}
-*/
-(function(){"use strict";"undefined"!=typeof self?self:"undefined"!=typeof window?window:void 0!==t||Function("return this")()})(),e.exports=function(e){var t={};function n(r){if(t[r])return t[r].exports;var o=t[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=e,n.c=t,n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var o in e)n.d(r,o,function(t){return e[t]}.bind(null,o));return r},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=0)}([function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=function(e){return null==e}}])}).call(this,n(2))},function(e,t){var n;n=function(){return this}();try{n=n||new Function("return this")()}catch(e){"object"==typeof window&&(n=window)}e.exports=n}])}).call(this,n(0))},function(e,t,n){(function(t){
-/*!
-{
-  "copywrite": "Copyright (c) 2015-present",
-  "date": "2019-07-10T12:22:07.292Z",
-  "describe": "",
-  "description": "ES6-compliant shim for ToString.",
-  "file": "to-string-x.min.js",
-  "hash": "ee3283c5460ef8f2ce4d",
-  "license": "MIT",
-  "version": "2.0.3"
-}
-*/
-(function(){"use strict";"undefined"!=typeof self?self:"undefined"!=typeof window?window:void 0!==t||Function("return this")()})(),e.exports=function(e){var t={};function n(r){if(t[r])return t[r].exports;var o=t[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=e,n.c=t,n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var o in e)n.d(r,o,function(t){return e[t]}.bind(null,o));return r},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=0)}([function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=function(e){if((0,o.default)(e))throw new TypeError("Cannot convert a Symbol value to a string");return"".constructor(e)};var r,o=(r=n(1))&&r.__esModule?r:{default:r}},function(e,t,n){"use strict";var r=Object.prototype.toString;if(n(2)()){var o=Symbol.prototype.toString,i=/^Symbol\(.*\)$/;e.exports=function(e){if("symbol"==typeof e)return!0;if("[object Symbol]"!==r.call(e))return!1;try{return function(e){return"symbol"==typeof e.valueOf()&&i.test(o.call(e))}(e)}catch(e){return!1}}}else e.exports=function(e){return!1}},function(e,t,n){"use strict";(function(t){var r=t.Symbol,o=n(4);e.exports=function(){return"function"==typeof r&&"function"==typeof Symbol&&"symbol"==typeof r("foo")&&"symbol"==typeof Symbol("bar")&&o()}}).call(this,n(3))},function(e,t){var n;n=function(){return this}();try{n=n||new Function("return this")()}catch(e){"object"==typeof window&&(n=window)}e.exports=n},function(e,t,n){"use strict";e.exports=function(){if("function"!=typeof Symbol||"function"!=typeof Object.getOwnPropertySymbols)return!1;if("symbol"==typeof Symbol.iterator)return!0;var e={},t=Symbol("test"),n=Object(t);if("string"==typeof t)return!1;if("[object Symbol]"!==Object.prototype.toString.call(t))return!1;if("[object Symbol]"!==Object.prototype.toString.call(n))return!1;for(t in e[t]=42,e)return!1;if("function"==typeof Object.keys&&0!==Object.keys(e).length)return!1;if("function"==typeof Object.getOwnPropertyNames&&0!==Object.getOwnPropertyNames(e).length)return!1;var r=Object.getOwnPropertySymbols(e);if(1!==r.length||r[0]!==t)return!1;if(!Object.prototype.propertyIsEnumerable.call(e,t))return!1;if("function"==typeof Object.getOwnPropertyDescriptor){var o=Object.getOwnPropertyDescriptor(e,t);if(42!==o.value||!0!==o.enumerable)return!1}return!0}}])}).call(this,n(0))}])}).call(this,n(0))},function(e,t,n){(function(t){
-/*!
-{
-  "copywrite": "Copyright (c) 2015-present",
-  "date": "2019-07-10T22:27:27.494Z",
-  "describe": "",
-  "description": "List of ECMAScript white space characters.",
-  "file": "white-space-x.min.js",
-  "hash": "fe69807cce4b9e3da193",
-  "license": "MIT",
-  "version": "4.0.1"
-}
-*/
-(function(){"use strict";"undefined"!=typeof self?self:"undefined"!=typeof window?window:void 0!==t||Function("return this")()})(),e.exports=function(e){var t={};function n(r){if(t[r])return t[r].exports;var o=t[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=e,n.c=t,n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var o in e)n.d(r,o,function(t){return e[t]}.bind(null,o));return r},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=0)}([function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.string2016=t.default=t.list=void 0;var r=[{code:9,description:"Tab",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:"\t"},{code:10,description:"Line Feed",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:"\n"},{code:11,description:"Vertical Tab",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:"\v"},{code:12,description:"Form Feed",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:"\f"},{code:13,description:"Carriage Return",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:"\r"},{code:32,description:"Space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:160,description:"No-break space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:5760,description:"Ogham space mark",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:6158,description:"Mongolian vowel separator",es5:!0,es2015:!0,es2016:!0,es2017:!1,es2018:!1,string:"᠎"},{code:8192,description:"En quad",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8193,description:"Em quad",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8194,description:"En space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8195,description:"Em space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8196,description:"Three-per-em space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8197,description:"Four-per-em space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8198,description:"Six-per-em space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8199,description:"Figure space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8200,description:"Punctuation space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8201,description:"Thin space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8202,description:"Hair space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8232,description:"Line separator",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:"\u2028"},{code:8233,description:"Paragraph separator",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:"\u2029"},{code:8239,description:"Narrow no-break space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8287,description:"Medium mathematical space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:12288,description:"Ideographic space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:"　"},{code:65279,description:"Byte Order Mark",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:"\ufeff"}];t.list=r;for(var o="",i="",s=r.length,u=0;u<s;u+=1)r[u].es2016&&(o+=r[u].string),r[u].es2018&&(i+=r[u].string);var c=i;t.default=c;var f=o;t.string2016=f}])}).call(this,n(0))}])}).call(this,n(0))}])}).call(this,n(0))},function(e,t,n){(function(t){
-/*!
-{
-  "copywrite": "Copyright (c) 2015-present",
-  "date": "2019-07-10T22:27:27.494Z",
-  "describe": "",
-  "description": "List of ECMAScript white space characters.",
-  "file": "white-space-x.min.js",
-  "hash": "fe69807cce4b9e3da193",
-  "license": "MIT",
-  "version": "4.0.1"
-}
-*/
-(function(){"use strict";"undefined"!=typeof self?self:"undefined"!=typeof window?window:void 0!==t||Function("return this")()})(),e.exports=function(e){var t={};function n(r){if(t[r])return t[r].exports;var o=t[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=e,n.c=t,n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var o in e)n.d(r,o,function(t){return e[t]}.bind(null,o));return r},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=0)}([function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.string2016=t.default=t.list=void 0;var r=[{code:9,description:"Tab",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:"\t"},{code:10,description:"Line Feed",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:"\n"},{code:11,description:"Vertical Tab",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:"\v"},{code:12,description:"Form Feed",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:"\f"},{code:13,description:"Carriage Return",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:"\r"},{code:32,description:"Space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:160,description:"No-break space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:5760,description:"Ogham space mark",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:6158,description:"Mongolian vowel separator",es5:!0,es2015:!0,es2016:!0,es2017:!1,es2018:!1,string:"᠎"},{code:8192,description:"En quad",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8193,description:"Em quad",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8194,description:"En space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8195,description:"Em space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8196,description:"Three-per-em space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8197,description:"Four-per-em space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8198,description:"Six-per-em space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8199,description:"Figure space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8200,description:"Punctuation space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8201,description:"Thin space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8202,description:"Hair space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8232,description:"Line separator",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:"\u2028"},{code:8233,description:"Paragraph separator",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:"\u2029"},{code:8239,description:"Narrow no-break space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:8287,description:"Medium mathematical space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:" "},{code:12288,description:"Ideographic space",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:"　"},{code:65279,description:"Byte Order Mark",es5:!0,es2015:!0,es2016:!0,es2017:!0,es2018:!0,string:"\ufeff"}];t.list=r;for(var o="",i="",s=r.length,u=0;u<s;u+=1)r[u].es2016&&(o+=r[u].string),r[u].es2018&&(i+=r[u].string);var c=i;t.default=c;var f=o;t.string2016=f}])}).call(this,n(0))}])});
-//# sourceMappingURL=normalize-space-x.min.js.map
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(0)))
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(global) {/*!
-{
-  "copywrite": "Copyright (c) 2017",
-  "date": "2019-07-11T00:22:28.161Z",
-  "describe": "",
-  "description": "Replace the comments in a string.",
-  "file": "replace-comments-x.min.js",
-  "hash": "776e73d2a3a03e8071d9",
-  "license": "MIT",
-  "version": "3.0.0"
-}
-*/
-!function(e,t){ true?module.exports=t():undefined}(function(){"use strict";return"undefined"!=typeof self?self:"undefined"!=typeof window?window:"undefined"!=typeof global?global:Function("return this")()}(),function(){return function(e){var t={};function n(r){if(t[r])return t[r].exports;var o=t[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=e,n.c=t,n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var o in e)n.d(r,o,function(t){return e[t]}.bind(null,o));return r},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=1)}([function(e,t){var n;n=function(){return this}();try{n=n||new Function("return this")()}catch(e){"object"==typeof window&&(n=window)}e.exports=n},function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=function(e,t){return f.call((0,o.default)(e),i,arguments.length>1?(0,r.default)(t):"")};var r=u(n(2)),o=u(n(3));function u(e){return e&&e.__esModule?e:{default:e}}var i=/((\/\/.*$)|(\/\*[\s\S]*?\*\/))/gm,f="".replace},function(e,t,n){(function(t){
-/*!
-{
-  "copywrite": "Copyright (c) 2015-present",
-  "date": "2019-07-10T12:22:07.292Z",
-  "describe": "",
-  "description": "ES6-compliant shim for ToString.",
-  "file": "to-string-x.min.js",
-  "hash": "ee3283c5460ef8f2ce4d",
-  "license": "MIT",
-  "version": "2.0.3"
-}
-*/
-(function(){"use strict";"undefined"!=typeof self?self:"undefined"!=typeof window?window:void 0!==t||Function("return this")()})(),e.exports=function(e){var t={};function n(r){if(t[r])return t[r].exports;var o=t[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=e,n.c=t,n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var o in e)n.d(r,o,function(t){return e[t]}.bind(null,o));return r},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=0)}([function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=function(e){if((0,o.default)(e))throw new TypeError("Cannot convert a Symbol value to a string");return"".constructor(e)};var r,o=(r=n(1))&&r.__esModule?r:{default:r}},function(e,t,n){"use strict";var r=Object.prototype.toString;if(n(2)()){var o=Symbol.prototype.toString,u=/^Symbol\(.*\)$/;e.exports=function(e){if("symbol"==typeof e)return!0;if("[object Symbol]"!==r.call(e))return!1;try{return function(e){return"symbol"==typeof e.valueOf()&&u.test(o.call(e))}(e)}catch(e){return!1}}}else e.exports=function(e){return!1}},function(e,t,n){"use strict";(function(t){var r=t.Symbol,o=n(4);e.exports=function(){return"function"==typeof r&&"function"==typeof Symbol&&"symbol"==typeof r("foo")&&"symbol"==typeof Symbol("bar")&&o()}}).call(this,n(3))},function(e,t){var n;n=function(){return this}();try{n=n||new Function("return this")()}catch(e){"object"==typeof window&&(n=window)}e.exports=n},function(e,t,n){"use strict";e.exports=function(){if("function"!=typeof Symbol||"function"!=typeof Object.getOwnPropertySymbols)return!1;if("symbol"==typeof Symbol.iterator)return!0;var e={},t=Symbol("test"),n=Object(t);if("string"==typeof t)return!1;if("[object Symbol]"!==Object.prototype.toString.call(t))return!1;if("[object Symbol]"!==Object.prototype.toString.call(n))return!1;for(t in e[t]=42,e)return!1;if("function"==typeof Object.keys&&0!==Object.keys(e).length)return!1;if("function"==typeof Object.getOwnPropertyNames&&0!==Object.getOwnPropertyNames(e).length)return!1;var r=Object.getOwnPropertySymbols(e);if(1!==r.length||r[0]!==t)return!1;if(!Object.prototype.propertyIsEnumerable.call(e,t))return!1;if("function"==typeof Object.getOwnPropertyDescriptor){var o=Object.getOwnPropertyDescriptor(e,t);if(42!==o.value||!0!==o.enumerable)return!1}return!0}}])}).call(this,n(0))},function(e,t,n){(function(t){
-/*!
-{
-  "copywrite": "Copyright (c) 2017-present",
-  "date": "2019-07-10T19:57:07.334Z",
-  "describe": "",
-  "description": "Requires an argument is corecible then converts using ToString.",
-  "file": "require-coercible-to-string-x.min.js",
-  "hash": "4c0a223c2f880366be07",
-  "license": "MIT",
-  "version": "2.0.0"
-}
-*/
-(function(){"use strict";"undefined"!=typeof self?self:"undefined"!=typeof window?window:void 0!==t||Function("return this")()})(),e.exports=function(e){var t={};function n(r){if(t[r])return t[r].exports;var o=t[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=e,n.c=t,n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var o in e)n.d(r,o,function(t){return e[t]}.bind(null,o));return r},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=1)}([function(e,t){var n;n=function(){return this}();try{n=n||new Function("return this")()}catch(e){"object"==typeof window&&(n=window)}e.exports=n},function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=function(e){return(0,o.default)((0,r.default)(e))};var r=u(n(2)),o=u(n(3));function u(e){return e&&e.__esModule?e:{default:e}}},function(e,t,n){(function(t){
-/*!
-{
-  "copywrite": "Copyright (c) 2015-present",
-  "date": "2019-07-10T19:41:32.687Z",
-  "describe": "",
-  "description": "ES6-compliant shim for RequireObjectCoercible.",
-  "file": "require-object-coercible-x.min.js",
-  "hash": "e0a246211b3fc1c03415",
-  "license": "MIT",
-  "version": "2.0.0"
-}
-*/
-(function(){"use strict";"undefined"!=typeof self?self:"undefined"!=typeof window?window:void 0!==t||Function("return this")()})(),e.exports=function(e){var t={};function n(r){if(t[r])return t[r].exports;var o=t[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=e,n.c=t,n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var o in e)n.d(r,o,function(t){return e[t]}.bind(null,o));return r},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=0)}([function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=function(e){if((0,o.default)(e))throw new TypeError("Cannot call method on ".concat(e));return e};var r,o=(r=n(1))&&r.__esModule?r:{default:r}},function(e,t,n){(function(t){
-/*!
-{
-  "copywrite": "Copyright (c) 2015-present",
-  "date": "2019-07-10T12:31:27.126Z",
-  "describe": "",
-  "description": "Checks if `value` is `null` or `undefined`.",
-  "file": "is-nil-x.min.js",
-  "hash": "e4915937853cc4a715ce",
-  "license": "MIT",
-  "version": "2.0.0"
-}
-*/
-(function(){"use strict";"undefined"!=typeof self?self:"undefined"!=typeof window?window:void 0!==t||Function("return this")()})(),e.exports=function(e){var t={};function n(r){if(t[r])return t[r].exports;var o=t[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=e,n.c=t,n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var o in e)n.d(r,o,function(t){return e[t]}.bind(null,o));return r},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=0)}([function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=function(e){return null==e}}])}).call(this,n(2))},function(e,t){var n;n=function(){return this}();try{n=n||new Function("return this")()}catch(e){"object"==typeof window&&(n=window)}e.exports=n}])}).call(this,n(0))},function(e,t,n){(function(t){
-/*!
-{
-  "copywrite": "Copyright (c) 2015-present",
-  "date": "2019-07-10T12:22:07.292Z",
-  "describe": "",
-  "description": "ES6-compliant shim for ToString.",
-  "file": "to-string-x.min.js",
-  "hash": "ee3283c5460ef8f2ce4d",
-  "license": "MIT",
-  "version": "2.0.3"
-}
-*/
-(function(){"use strict";"undefined"!=typeof self?self:"undefined"!=typeof window?window:void 0!==t||Function("return this")()})(),e.exports=function(e){var t={};function n(r){if(t[r])return t[r].exports;var o=t[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=e,n.c=t,n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var o in e)n.d(r,o,function(t){return e[t]}.bind(null,o));return r},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=0)}([function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=function(e){if((0,o.default)(e))throw new TypeError("Cannot convert a Symbol value to a string");return"".constructor(e)};var r,o=(r=n(1))&&r.__esModule?r:{default:r}},function(e,t,n){"use strict";var r=Object.prototype.toString;if(n(2)()){var o=Symbol.prototype.toString,u=/^Symbol\(.*\)$/;e.exports=function(e){if("symbol"==typeof e)return!0;if("[object Symbol]"!==r.call(e))return!1;try{return function(e){return"symbol"==typeof e.valueOf()&&u.test(o.call(e))}(e)}catch(e){return!1}}}else e.exports=function(e){return!1}},function(e,t,n){"use strict";(function(t){var r=t.Symbol,o=n(4);e.exports=function(){return"function"==typeof r&&"function"==typeof Symbol&&"symbol"==typeof r("foo")&&"symbol"==typeof Symbol("bar")&&o()}}).call(this,n(3))},function(e,t){var n;n=function(){return this}();try{n=n||new Function("return this")()}catch(e){"object"==typeof window&&(n=window)}e.exports=n},function(e,t,n){"use strict";e.exports=function(){if("function"!=typeof Symbol||"function"!=typeof Object.getOwnPropertySymbols)return!1;if("symbol"==typeof Symbol.iterator)return!0;var e={},t=Symbol("test"),n=Object(t);if("string"==typeof t)return!1;if("[object Symbol]"!==Object.prototype.toString.call(t))return!1;if("[object Symbol]"!==Object.prototype.toString.call(n))return!1;for(t in e[t]=42,e)return!1;if("function"==typeof Object.keys&&0!==Object.keys(e).length)return!1;if("function"==typeof Object.getOwnPropertyNames&&0!==Object.getOwnPropertyNames(e).length)return!1;var r=Object.getOwnPropertySymbols(e);if(1!==r.length||r[0]!==t)return!1;if(!Object.prototype.propertyIsEnumerable.call(e,t))return!1;if("function"==typeof Object.getOwnPropertyDescriptor){var o=Object.getOwnPropertyDescriptor(e,t);if(42!==o.value||!0!==o.enumerable)return!1}return!0}}])}).call(this,n(0))}])}).call(this,n(0))}])});
-//# sourceMappingURL=replace-comments-x.min.js.map
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(0)))
 
 /***/ })
 /******/ ]);

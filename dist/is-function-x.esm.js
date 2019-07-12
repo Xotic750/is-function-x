@@ -1,3 +1,7 @@
+var _this = this;
+
+function _newArrowCheck(innerThis, boundThis) { if (innerThis !== boundThis) { throw new TypeError("Cannot instantiate an arrow function"); } }
+
 import attempt from 'attempt-x';
 import toBoolean from 'to-boolean-x';
 import isFalsey from 'is-falsey-x';
@@ -6,31 +10,28 @@ import hasToStringTag from 'has-to-string-tag-x';
 import isPrimitive from 'is-primitive';
 import normalise from 'normalize-space-x';
 import deComment from 'replace-comments-x';
+var SPACE = ' ';
+var fToString = Function.prototype.toString;
+var funcTag = '[object Function]';
+var genTag = '[object GeneratorFunction]';
+var asyncTag = '[object AsyncFunction]';
+var ctrRx = /^class /;
+var test = ctrRx.test;
+var hasNativeClass = attempt(function () {
+  _newArrowCheck(this, _this);
 
-const SPACE = ' ';
-const fToString = Function.prototype.toString;
-const funcTag = '[object Function]';
-const genTag = '[object GeneratorFunction]';
-const asyncTag = '[object AsyncFunction]';
-const ctrRx = /^class /;
-const {test} = ctrRx;
+  /* eslint-disable-next-line no-new-func */
+  return Function('"use strict"; return class My {};')();
+}.bind(this)).threw === false;
 
-const hasNativeClass =
-  attempt(() => {
-    /* eslint-disable-next-line no-new-func */
-    return Function('"use strict"; return class My {};')();
-  }).threw === false;
-
-const testClassstring = function _testClassstring(value) {
+var testClassstring = function _testClassstring(value) {
   return test.call(ctrRx, normalise(deComment(fToString.call(value), SPACE)));
 };
 
-const isES6ClassFn = function isES6ClassFunc(value) {
-  const result = attempt(testClassstring, value);
-
+var isES6ClassFn = function isES6ClassFunc(value) {
+  var result = attempt(testClassstring, value);
   return result.threw === false && result.value;
 };
-
 /**
  * Checks if `value` is classified as a `Function` object.
  *
@@ -40,14 +41,15 @@ const isES6ClassFn = function isES6ClassFunc(value) {
  * @returns {boolean} Returns `true` if `value` is correctly classified,
  * else `false`.
  */
-const tryFuncToString = function funcToString(value, allowClass) {
+
+
+var tryFuncToString = function funcToString(value, allowClass) {
   if (hasNativeClass && allowClass === false && isES6ClassFn(value)) {
     return false;
   }
 
   return attempt.call(value, fToString).threw === false;
 };
-
 /**
  * Checks if `value` is classified as a `Function` object.
  *
@@ -56,6 +58,8 @@ const tryFuncToString = function funcToString(value, allowClass) {
  * @returns {boolean} Returns `true` if `value` is correctly classified,
  * else `false`.
  */
+
+
 export default function isFunction(value, allowClass) {
   if (isPrimitive(value)) {
     return false;
@@ -69,7 +73,8 @@ export default function isFunction(value, allowClass) {
     return false;
   }
 
-  const strTag = toStringTag(value);
-
+  var strTag = toStringTag(value);
   return strTag === funcTag || strTag === genTag || strTag === asyncTag;
 }
+
+//# sourceMappingURL=is-function-x.esm.js.map
