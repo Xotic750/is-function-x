@@ -63,26 +63,26 @@ describe('basic tests', function() {
       Boolean,
       Array,
       Function,
-      /* eslint-disable-next-line lodash/prefer-noop */
+
       function() {},
-      /* eslint-disable-next-line lodash/prefer-noop */
+
       function test(a) {} /* eslint-disable-line no-unused-vars */,
       new Function(),
-      /* eslint-disable-next-line lodash/prefer-noop */
+
       function test1(a, b) {} /* eslint-disable-line no-unused-vars */,
-      /* eslint-disable-next-line lodash/prefer-noop */
+
       function test2(a /* , foo */) {} /* eslint-disable-line no-unused-vars */,
-      /* eslint-disable-next-line lodash/prefer-noop */
+
       function test3(a /* , foo */, b) {} /* eslint-disable-line no-unused-vars */,
-      /* eslint-disable-next-line lodash/prefer-noop */
+
       function test4(a /* , foo */, b) {} /* eslint-disable-line no-unused-vars */,
-      /* eslint-disable-next-line lodash/prefer-noop */
+
       function /* foo */ test5(a /* , foo */, b) {} /* eslint-disable-line no-unused-vars */,
-      /* eslint-disable-next-line lodash/prefer-noop */
+
       function /* foo */ test6 /* bar */(a /* , foo */, b) {} /* eslint-disable-line no-unused-vars */,
-      /* eslint-disable-next-line lodash/prefer-noop */
+
       function /* foo */ test7 /* bar */(/* baz */) {},
-      /* eslint-disable-next-line lodash/prefer-noop */
+
       /* fum */ function /* foo */ // blah
       test8(/* baz */ a) {} /* eslint-disable-line no-unused-vars */,
     ];
