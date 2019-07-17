@@ -2,13 +2,13 @@
 {
   "author": "Graham Fairweather",
   "copywrite": "Copyright (c) 2015-present",
-  "date": "2019-07-17T11:34:08.909Z",
+  "date": "2019-07-17T15:24:54.673Z",
   "describe": "",
   "description": "Determine whether a given value is a function object.",
   "file": "is-function-x.js",
-  "hash": "264d2ab6d29da2df8262",
+  "hash": "069399b20d4d56058a75",
   "license": "MIT",
-  "version": "4.0.11"
+  "version": "4.0.12"
 }
 */
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -300,7 +300,7 @@ __webpack_require__.r(__webpack_exports__);
  * @param {...*} [args] - The arguments to invoke the function with.
  * @returns {object} Returns an object of the result.
  */
-function attempt(fn) {
+var attempt = function attempt(fn) {
   try {
     for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
       args[_key - 1] = arguments[_key];
@@ -318,7 +318,9 @@ function attempt(fn) {
       value: e
     };
   }
-}
+};
+
+/* harmony default export */ var attempt_x_esm = (attempt);
 
 
 // CONCATENATED MODULE: ./node_modules/to-boolean-x/dist/to-boolean-x.esm.js
@@ -328,9 +330,11 @@ function attempt(fn) {
  * @param {*} [value] - The value to be converted.
  * @returns {boolean} 'true' if value is truthy; otherwise 'false'.
  */
-function toBoolean(value) {
+var toBoolean = function toBoolean(value) {
   return !!value;
-}
+};
+
+/* harmony default export */ var to_boolean_x_esm = (toBoolean);
 
 
 // CONCATENATED MODULE: ./node_modules/to-string-tag-x/dist/to-string-tag-x.esm.js
@@ -343,7 +347,7 @@ var nativeObjectToString = {}.toString;
  * @returns {string} The object type string.
  */
 
-function toStringTag(value) {
+var toStringTag = function toStringTag(value) {
   if (value === null) {
     return '[object Null]';
   }
@@ -353,7 +357,9 @@ function toStringTag(value) {
   }
 
   return nativeObjectToString.call(value);
-}
+};
+
+/* harmony default export */ var to_string_tag_x_esm = (toStringTag);
 
 
 // EXTERNAL MODULE: ./node_modules/is-symbol/index.js
@@ -367,7 +373,7 @@ function _newArrowCheck(innerThis, boundThis) { if (innerThis !== boundThis) { t
 
 
 
-var hasSymbolSupport = attempt(function () {
+var hasSymbolSupport = attempt_x_esm(function () {
   _newArrowCheck(this, _this);
 
   /* eslint-disable-next-line compat/compat */
@@ -409,10 +415,12 @@ var is_primitive_default = /*#__PURE__*/__webpack_require__.n(is_primitive);
  * @param {*} [value] - The value to check.
  * @returns {boolean} Returns `true` if `value` is nullish, else `false`.
  */
-function isNil(value) {
+var isNil = function isNil(value) {
   /* eslint-disable-next-line lodash/prefer-is-nil */
   return value === null || typeof value === 'undefined';
-}
+};
+
+/* harmony default export */ var is_nil_x_esm = (isNil);
 
 
 // CONCATENATED MODULE: ./node_modules/require-object-coercible-x/dist/require-object-coercible-x.esm.js
@@ -426,13 +434,15 @@ function isNil(value) {
  * @returns {string} The `value`.
  */
 
-function requireObjectCoercible(value) {
-  if (isNil(value)) {
+var require_object_coercible_x_esm_requireObjectCoercible = function requireObjectCoercible(value) {
+  if (is_nil_x_esm(value)) {
     throw new TypeError("Cannot call method on ".concat(value));
   }
 
   return value;
-}
+};
+
+/* harmony default export */ var require_object_coercible_x_esm = (require_object_coercible_x_esm_requireObjectCoercible);
 
 
 // CONCATENATED MODULE: ./node_modules/to-string-x/dist/to-string-x.esm.js
@@ -447,13 +457,15 @@ var castString = ERROR_MESSAGE.constructor;
  * @returns {string} The converted value.
  */
 
-function ToString(value) {
+var to_string_x_esm_ToString = function ToString(value) {
   if (is_symbol_default()(value)) {
     throw new TypeError(ERROR_MESSAGE);
   }
 
   return castString(value);
-}
+};
+
+/* harmony default export */ var to_string_x_esm = (to_string_x_esm_ToString);
 
 
 // CONCATENATED MODULE: ./node_modules/require-coercible-to-string-x/dist/require-coercible-to-string-x.esm.js
@@ -467,9 +479,11 @@ function ToString(value) {
  * @returns {string} The value as a string.
  */
 
-function requireCoercibleToString(value) {
-  return ToString(requireObjectCoercible(value));
-}
+var require_coercible_to_string_x_esm_requireCoercibleToString = function requireCoercibleToString(value) {
+  return to_string_x_esm(require_object_coercible_x_esm(value));
+};
+
+/* harmony default export */ var require_coercible_to_string_x_esm = (require_coercible_to_string_x_esm_requireCoercibleToString);
 
 
 // CONCATENATED MODULE: ./node_modules/white-space-x/dist/white-space-x.esm.js
@@ -802,7 +816,7 @@ var replace = EMPTY_STRING.replace;
  */
 
 function trimLeft2016(string) {
-  return replace.call(requireCoercibleToString(string), reLeft2016, EMPTY_STRING);
+  return replace.call(require_coercible_to_string_x_esm(string), reLeft2016, EMPTY_STRING);
 }
 /**
  * This method removes whitespace from the left end of a string. (ES2018).
@@ -812,9 +826,11 @@ function trimLeft2016(string) {
  * @returns {string} The left trimmed string.
  */
 
-function trimLeft2018(string) {
-  return replace.call(requireCoercibleToString(string), reLeft, EMPTY_STRING);
-}
+var trim_left_x_esm_trimLeft2018 = function trimLeft2018(string) {
+  return replace.call(require_coercible_to_string_x_esm(string), reLeft, EMPTY_STRING);
+};
+
+/* harmony default export */ var trim_left_x_esm = (trim_left_x_esm_trimLeft2018);
 
 
 // CONCATENATED MODULE: ./node_modules/trim-right-x/dist/trim-right-x.esm.js
@@ -834,7 +850,7 @@ var trim_right_x_esm_replace = trim_right_x_esm_EMPTY_STRING.replace;
  */
 
 function trimRight2016(string) {
-  return trim_right_x_esm_replace.call(requireCoercibleToString(string), reRight2016, trim_right_x_esm_EMPTY_STRING);
+  return trim_right_x_esm_replace.call(require_coercible_to_string_x_esm(string), reRight2016, trim_right_x_esm_EMPTY_STRING);
 }
 /**
  * This method removes whitespace from the right end of a string. (ES2018).
@@ -844,9 +860,11 @@ function trimRight2016(string) {
  * @returns {string} The right trimmed string.
  */
 
-function trimRight2018(string) {
-  return trim_right_x_esm_replace.call(requireCoercibleToString(string), reRight2018, trim_right_x_esm_EMPTY_STRING);
-}
+var trim_right_x_esm_trimRight2018 = function trimRight2018(string) {
+  return trim_right_x_esm_replace.call(require_coercible_to_string_x_esm(string), reRight2018, trim_right_x_esm_EMPTY_STRING);
+};
+
+/* harmony default export */ var trim_right_x_esm = (trim_right_x_esm_trimRight2018);
 
 
 // CONCATENATED MODULE: ./node_modules/trim-x/dist/trim-x.esm.js
@@ -873,9 +891,11 @@ function trim2016(string) {
  * @returns {string} The trimmed string.
  */
 
-function trim2018(string) {
-  return trimLeft2018(trimRight2018(string));
-}
+var trim_x_esm_trim2018 = function trim2018(string) {
+  return trim_left_x_esm(trim_right_x_esm(string));
+};
+
+/* harmony default export */ var trim_x_esm = (trim_x_esm_trim2018);
 
 
 // CONCATENATED MODULE: ./node_modules/normalize-space-x/dist/normalize-space-x.esm.js
@@ -908,9 +928,11 @@ function normalizeSpace2016(string) {
  * @throws {TypeError} If string is null or undefined or not coercible.
  */
 
-function normalizeSpace2018(string) {
-  return normalize_space_x_esm_replace.call(trim2018(string), reNormalize2018, SPACE);
-}
+var normalize_space_x_esm_normalizeSpace2018 = function normalizeSpace2018(string) {
+  return normalize_space_x_esm_replace.call(trim_x_esm(string), reNormalize2018, SPACE);
+};
+
+/* harmony default export */ var normalize_space_x_esm = (normalize_space_x_esm_normalizeSpace2018);
 
 
 // CONCATENATED MODULE: ./node_modules/replace-comments-x/dist/replace-comments-x.esm.js
@@ -929,9 +951,11 @@ var replace_comments_x_esm_replace = replace_comments_x_esm_EMPTY_STRING.replace
  * @returns {string} The new string with the comments replaced.
  */
 
-function replaceComments(string, replacement) {
-  return replace_comments_x_esm_replace.call(requireCoercibleToString(string), STRIP_COMMENTS, arguments.length > 1 ? ToString(replacement) : replace_comments_x_esm_EMPTY_STRING);
-}
+var replace_comments_x_esm_replaceComments = function replaceComments(string, replacement) {
+  return replace_comments_x_esm_replace.call(require_coercible_to_string_x_esm(string), STRIP_COMMENTS, arguments.length > 1 ? to_string_x_esm(replacement) : replace_comments_x_esm_EMPTY_STRING);
+};
+
+/* harmony default export */ var replace_comments_x_esm = (replace_comments_x_esm_replaceComments);
 
 
 // CONCATENATED MODULE: ./dist/is-function-x.esm.js
@@ -946,16 +970,16 @@ function is_function_x_esm_newArrowCheck(innerThis, boundThis) { if (innerThis !
 
 
 
-var FunctionCtr = attempt.constructor;
+var FunctionCtr = attempt_x_esm.constructor;
 var castBoolean = true.constructor;
 var is_function_x_esm_SPACE = ' ';
-var fToString = attempt.toString;
+var fToString = attempt_x_esm.toString;
 var funcTag = '[object Function]';
 var genTag = '[object GeneratorFunction]';
 var asyncTag = '[object AsyncFunction]';
 var ctrRx = /^class /;
 var test = ctrRx.test;
-var hasNativeClass = attempt(function () {
+var hasNativeClass = attempt_x_esm(function () {
   is_function_x_esm_newArrowCheck(this, is_function_x_esm_this);
 
   /* eslint-disable-next-line babel/new-cap */
@@ -963,11 +987,11 @@ var hasNativeClass = attempt(function () {
 }.bind(undefined)).threw === false;
 
 var testClassstring = function _testClassstring(value) {
-  return test.call(ctrRx, normalizeSpace2018(replaceComments(fToString.call(value), is_function_x_esm_SPACE)));
+  return test.call(ctrRx, normalize_space_x_esm(replace_comments_x_esm(fToString.call(value), is_function_x_esm_SPACE)));
 };
 
 var isES6ClassFn = function isES6ClassFunc(value) {
-  var result = attempt(testClassstring, value);
+  var result = attempt_x_esm(testClassstring, value);
   return result.threw === false && result.value;
 };
 /**
@@ -986,7 +1010,7 @@ var tryFuncToString = function funcToString(value, allowClass) {
     return false;
   }
 
-  return attempt.call(value, fToString).threw === false;
+  return attempt_x_esm.call(value, fToString).threw === false;
 };
 /**
  * Checks if `value` is classified as a `Function` object.
@@ -1004,14 +1028,14 @@ var is_function_x_esm_isFunction = function isFunction(value, allowClass) {
   }
 
   if (has_to_string_tag_x_esm) {
-    return tryFuncToString(value, toBoolean(allowClass));
+    return tryFuncToString(value, to_boolean_x_esm(allowClass));
   }
 
   if (hasNativeClass && castBoolean(allowClass) === false && isES6ClassFn(value)) {
     return false;
   }
 
-  var strTag = toStringTag(value);
+  var strTag = to_string_tag_x_esm(value);
   return strTag === funcTag || strTag === genTag || strTag === asyncTag;
 };
 
