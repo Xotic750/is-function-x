@@ -2,11 +2,11 @@
 {
   "author": "Graham Fairweather",
   "copywrite": "Copyright (c) 2015-present",
-  "date": "2019-07-16T21:11:31.312Z",
+  "date": "2019-07-17T11:34:08.909Z",
   "describe": "",
   "description": "Determine whether a given value is a function object.",
   "file": "is-function-x.js",
-  "hash": "fdb22998be2039f23043",
+  "hash": "264d2ab6d29da2df8262",
   "license": "MIT",
   "version": "4.0.11"
 }
@@ -330,20 +330,6 @@ function attempt(fn) {
  */
 function toBoolean(value) {
   return !!value;
-}
-
-
-// CONCATENATED MODULE: ./node_modules/is-falsey-x/dist/is-falsey-x.esm.js
-
-/**
- * This method tests if a given value is falsey.
- *
- * @param {*} [value] - The value to test.
- * @returns {boolean} `true` if the value is falsey: otherwise `false`.
- */
-
-function isFalsey(value) {
-  return !toBoolean(value);
 }
 
 
@@ -949,7 +935,6 @@ function replaceComments(string, replacement) {
 
 
 // CONCATENATED MODULE: ./dist/is-function-x.esm.js
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return isFunction; });
 var is_function_x_esm_this = undefined;
 
 function is_function_x_esm_newArrowCheck(innerThis, boundThis) { if (innerThis !== boundThis) { throw new TypeError("Cannot instantiate an arrow function"); } }
@@ -961,9 +946,10 @@ function is_function_x_esm_newArrowCheck(innerThis, boundThis) { if (innerThis !
 
 
 
-
+var FunctionCtr = attempt.constructor;
+var castBoolean = true.constructor;
 var is_function_x_esm_SPACE = ' ';
-var fToString = Function.prototype.toString;
+var fToString = attempt.toString;
 var funcTag = '[object Function]';
 var genTag = '[object GeneratorFunction]';
 var asyncTag = '[object AsyncFunction]';
@@ -972,8 +958,8 @@ var test = ctrRx.test;
 var hasNativeClass = attempt(function () {
   is_function_x_esm_newArrowCheck(this, is_function_x_esm_this);
 
-  /* eslint-disable-next-line no-new-func */
-  return Function('"use strict"; return class My {};')();
+  /* eslint-disable-next-line babel/new-cap */
+  return FunctionCtr('"use strict"; return class My {};')();
 }.bind(undefined)).threw === false;
 
 var testClassstring = function _testClassstring(value) {
@@ -1012,7 +998,7 @@ var tryFuncToString = function funcToString(value, allowClass) {
  */
 
 
-function isFunction(value, allowClass) {
+var is_function_x_esm_isFunction = function isFunction(value, allowClass) {
   if (is_primitive_default()(value)) {
     return false;
   }
@@ -1021,13 +1007,15 @@ function isFunction(value, allowClass) {
     return tryFuncToString(value, toBoolean(allowClass));
   }
 
-  if (hasNativeClass && isFalsey(allowClass) && isES6ClassFn(value)) {
+  if (hasNativeClass && castBoolean(allowClass) === false && isES6ClassFn(value)) {
     return false;
   }
 
   var strTag = toStringTag(value);
   return strTag === funcTag || strTag === genTag || strTag === asyncTag;
-}
+};
+
+/* harmony default export */ var is_function_x_esm = __webpack_exports__["default"] = (is_function_x_esm_isFunction);
 
 
 

@@ -1,14 +1,15 @@
 import attempt from 'attempt-x';
 import toBoolean from 'to-boolean-x';
-import isFalsey from 'is-falsey-x';
 import toStringTag from 'to-string-tag-x';
 import hasToStringTag from 'has-to-string-tag-x';
 import isPrimitive from 'is-primitive';
 import normalise from 'normalize-space-x';
 import deComment from 'replace-comments-x';
 
+const FunctionCtr = attempt.constructor;
+const castBoolean = true.constructor;
 const SPACE = ' ';
-const fToString = Function.prototype.toString;
+const fToString = attempt.toString;
 const funcTag = '[object Function]';
 const genTag = '[object GeneratorFunction]';
 const asyncTag = '[object AsyncFunction]';
@@ -17,8 +18,8 @@ const {test} = ctrRx;
 
 const hasNativeClass =
   attempt(() => {
-    /* eslint-disable-next-line no-new-func */
-    return Function('"use strict"; return class My {};')();
+    /* eslint-disable-next-line babel/new-cap */
+    return FunctionCtr('"use strict"; return class My {};')();
   }).threw === false;
 
 const testClassstring = function _testClassstring(value) {
@@ -56,7 +57,7 @@ const tryFuncToString = function funcToString(value, allowClass) {
  * @returns {boolean} Returns `true` if `value` is correctly classified,
  * else `false`.
  */
-export default function isFunction(value, allowClass) {
+const isFunction = function isFunction(value, allowClass) {
   if (isPrimitive(value)) {
     return false;
   }
@@ -65,11 +66,13 @@ export default function isFunction(value, allowClass) {
     return tryFuncToString(value, toBoolean(allowClass));
   }
 
-  if (hasNativeClass && isFalsey(allowClass) && isES6ClassFn(value)) {
+  if (hasNativeClass && castBoolean(allowClass) === false && isES6ClassFn(value)) {
     return false;
   }
 
   const strTag = toStringTag(value);
 
   return strTag === funcTag || strTag === genTag || strTag === asyncTag;
-}
+};
+
+export default isFunction;

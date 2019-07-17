@@ -4,14 +4,15 @@ function _newArrowCheck(innerThis, boundThis) { if (innerThis !== boundThis) { t
 
 import attempt from 'attempt-x';
 import toBoolean from 'to-boolean-x';
-import isFalsey from 'is-falsey-x';
 import toStringTag from 'to-string-tag-x';
 import hasToStringTag from 'has-to-string-tag-x';
 import isPrimitive from 'is-primitive';
 import normalise from 'normalize-space-x';
 import deComment from 'replace-comments-x';
+var FunctionCtr = attempt.constructor;
+var castBoolean = true.constructor;
 var SPACE = ' ';
-var fToString = Function.prototype.toString;
+var fToString = attempt.toString;
 var funcTag = '[object Function]';
 var genTag = '[object GeneratorFunction]';
 var asyncTag = '[object AsyncFunction]';
@@ -20,8 +21,8 @@ var test = ctrRx.test;
 var hasNativeClass = attempt(function () {
   _newArrowCheck(this, _this);
 
-  /* eslint-disable-next-line no-new-func */
-  return Function('"use strict"; return class My {};')();
+  /* eslint-disable-next-line babel/new-cap */
+  return FunctionCtr('"use strict"; return class My {};')();
 }.bind(this)).threw === false;
 
 var testClassstring = function _testClassstring(value) {
@@ -60,7 +61,7 @@ var tryFuncToString = function funcToString(value, allowClass) {
  */
 
 
-export default function isFunction(value, allowClass) {
+var isFunction = function isFunction(value, allowClass) {
   if (isPrimitive(value)) {
     return false;
   }
@@ -69,12 +70,14 @@ export default function isFunction(value, allowClass) {
     return tryFuncToString(value, toBoolean(allowClass));
   }
 
-  if (hasNativeClass && isFalsey(allowClass) && isES6ClassFn(value)) {
+  if (hasNativeClass && castBoolean(allowClass) === false && isES6ClassFn(value)) {
     return false;
   }
 
   var strTag = toStringTag(value);
   return strTag === funcTag || strTag === genTag || strTag === asyncTag;
-}
+};
+
+export default isFunction;
 
 //# sourceMappingURL=is-function-x.esm.js.map

@@ -51,7 +51,6 @@
   "dependencies": {
     "attempt-x": "^2.0.6",
     "has-to-string-tag-x": "^2.0.6",
-    "is-falsey-x": "^2.0.9",
     "is-primitive": "^3.0.1",
     "normalize-space-x": "^4.0.20",
     "replace-comments-x": "^3.0.8",
