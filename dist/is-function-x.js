@@ -2,13 +2,13 @@
 {
   "author": "Graham Fairweather",
   "copywrite": "Copyright (c) 2015-present",
-  "date": "2019-07-17T23:33:48.325Z",
+  "date": "2019-07-18T16:10:37.191Z",
   "describe": "",
   "description": "Determine whether a given value is a function object.",
   "file": "is-function-x.js",
   "hash": "069399b20d4d56058a75",
   "license": "MIT",
-  "version": "4.0.15"
+  "version": "4.0.16"
 }
 */
 (function webpackUniversalModuleDefinition(root, factory) {
