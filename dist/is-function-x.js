@@ -2,13 +2,13 @@
 {
   "author": "Graham Fairweather",
   "copywrite": "Copyright (c) 2015-present",
-  "date": "2019-07-22T12:23:52.661Z",
+  "date": "2019-07-23T23:56:40.790Z",
   "describe": "",
   "description": "Determine whether a given value is a function object.",
   "file": "is-function-x.js",
-  "hash": "069399b20d4d56058a75",
+  "hash": "1af63d2422f888ad5dd9",
   "license": "MIT",
-  "version": "4.0.20"
+  "version": "4.0.21"
 }
 */
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -804,33 +804,21 @@ var string2016 = stringES2016;
 
 var EMPTY_STRING = '';
 var RegExpCtr = /none/.constructor;
-var reLeft2016 = new RegExpCtr("^[".concat(string2016, "]+"));
 var reLeft = new RegExpCtr("^[".concat(white_space_x_esm, "]+"));
 var replace = EMPTY_STRING.replace;
 /**
- * This method removes whitespace from the left end of a string. (ES2016).
+ * This method removes whitespace from the start of a string. (ES2019).
  *
  * @param {string} [string] - The string to trim the left end whitespace from.
  * @throws {TypeError} If string is null or undefined or not coercible.
  * @returns {string} The left trimmed string.
  */
 
-function trimLeft2016(string) {
-  return replace.call(require_coercible_to_string_x_esm(string), reLeft2016, EMPTY_STRING);
-}
-/**
- * This method removes whitespace from the left end of a string. (ES2018).
- *
- * @param {string} [string] - The string to trim the left end whitespace from.
- * @throws {TypeError} If string is null or undefined or not coercible.
- * @returns {string} The left trimmed string.
- */
-
-var trim_left_x_esm_trimLeft2018 = function trimLeft2018(string) {
+var trim_left_x_esm_trimStart = function trimStart(string) {
   return replace.call(require_coercible_to_string_x_esm(string), reLeft, EMPTY_STRING);
 };
 
-/* harmony default export */ var trim_left_x_esm = (trim_left_x_esm_trimLeft2018);
+/* harmony default export */ var trim_left_x_esm = (trim_left_x_esm_trimStart);
 
 
 // CONCATENATED MODULE: ./node_modules/trim-right-x/dist/trim-right-x.esm.js
@@ -838,64 +826,40 @@ var trim_left_x_esm_trimLeft2018 = function trimLeft2018(string) {
 
 var trim_right_x_esm_EMPTY_STRING = '';
 var trim_right_x_esm_RegExpCtr = /none/.constructor;
-var reRight2016 = new trim_right_x_esm_RegExpCtr("[".concat(string2016, "]+$"));
 var reRight2018 = new trim_right_x_esm_RegExpCtr("[".concat(white_space_x_esm, "]+$"));
 var trim_right_x_esm_replace = trim_right_x_esm_EMPTY_STRING.replace;
 /**
- * This method removes whitespace from the right end of a string. (ES2016).
+ * This method removes whitespace from the end of a string. (ES2019).
  *
  * @param {string} [string] - The string to trim the right end whitespace from.
  * @throws {TypeError} If string is null or undefined or not coercible.
  * @returns {string} The right trimmed string.
  */
 
-function trimRight2016(string) {
-  return trim_right_x_esm_replace.call(require_coercible_to_string_x_esm(string), reRight2016, trim_right_x_esm_EMPTY_STRING);
-}
-/**
- * This method removes whitespace from the right end of a string. (ES2018).
- *
- * @param {string} [string] - The string to trim the right end whitespace from.
- * @throws {TypeError} If string is null or undefined or not coercible.
- * @returns {string} The right trimmed string.
- */
-
-var trim_right_x_esm_trimRight2018 = function trimRight2018(string) {
+var trim_right_x_esm_trimEnd = function trimEnd(string) {
   return trim_right_x_esm_replace.call(require_coercible_to_string_x_esm(string), reRight2018, trim_right_x_esm_EMPTY_STRING);
 };
 
-/* harmony default export */ var trim_right_x_esm = (trim_right_x_esm_trimRight2018);
+/* harmony default export */ var trim_right_x_esm = (trim_right_x_esm_trimEnd);
 
 
 // CONCATENATED MODULE: ./node_modules/trim-x/dist/trim-x.esm.js
 
 
 /**
- * This method removes whitespace from the left and right end of a string.
- * (ES2016).
+ * This method removes whitespace from the start and end of a string.
+ * (ES2019).
  *
  * @param {string} [string] - The string to trim the whitespace from.
  * @throws {TypeError} If string is null or undefined or not coercible.
  * @returns {string} The trimmed string.
  */
 
-function trim2016(string) {
-  return trimLeft2016(trimRight2016(string));
-}
-/**
- * This method removes whitespace from the left and right end of a string.
- * (ES2018).
- *
- * @param {string} [string] - The string to trim the whitespace from.
- * @throws {TypeError} If string is null or undefined or not coercible.
- * @returns {string} The trimmed string.
- */
-
-var trim_x_esm_trim2018 = function trim2018(string) {
+var trim_x_esm_trim = function trim(string) {
   return trim_left_x_esm(trim_right_x_esm(string));
 };
 
-/* harmony default export */ var trim_x_esm = (trim_x_esm_trim2018);
+/* harmony default export */ var trim_x_esm = (trim_x_esm_trim);
 
 
 // CONCATENATED MODULE: ./node_modules/normalize-space-x/dist/normalize-space-x.esm.js
@@ -903,36 +867,22 @@ var trim_x_esm_trim2018 = function trim2018(string) {
 
 var SPACE = ' ';
 var normalize_space_x_esm_RegExpCtr = /none/.constructor;
-var reNormalize2016 = new normalize_space_x_esm_RegExpCtr("[".concat(string2016, "]+"), 'g');
 var reNormalize2018 = new normalize_space_x_esm_RegExpCtr("[".concat(white_space_x_esm, "]+"), 'g');
 var normalize_space_x_esm_replace = SPACE.replace;
 /**
  * This method strips leading and trailing white-space from a string,
  * replaces sequences of whitespace characters by a single space,
- * and returns the resulting string. (ES2016).
- *
- * @param {string} [string] - The string to be normalized.
- * @throws {TypeError} If string is null or undefined or not coercible.
- * @returns {string} The normalized string.
- */
-
-function normalizeSpace2016(string) {
-  return normalize_space_x_esm_replace.call(trim2016(string), reNormalize2016, SPACE);
-}
-/**
- * This method strips leading and trailing white-space from a string,
- * replaces sequences of whitespace characters by a single space,
- * and returns the resulting string. (ES2018).
+ * and returns the resulting string. (ES2019).
  *
  * @param {string} [string] - The string to be normalized.
  * @throws {TypeError} If string is null or undefined or not coercible.
  */
 
-var normalize_space_x_esm_normalizeSpace2018 = function normalizeSpace2018(string) {
+var normalize_space_x_esm_normalizeSpace = function normalizeSpace(string) {
   return normalize_space_x_esm_replace.call(trim_x_esm(string), reNormalize2018, SPACE);
 };
 
-/* harmony default export */ var normalize_space_x_esm = (normalize_space_x_esm_normalizeSpace2018);
+/* harmony default export */ var normalize_space_x_esm = (normalize_space_x_esm_normalizeSpace);
 
 
 // CONCATENATED MODULE: ./node_modules/replace-comments-x/dist/replace-comments-x.esm.js
