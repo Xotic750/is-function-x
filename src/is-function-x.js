@@ -7,7 +7,6 @@ import normalise from 'normalize-space-x';
 import deComment from 'replace-comments-x';
 
 const FunctionCtr = attempt.constructor;
-const castBoolean = true.constructor;
 const SPACE = ' ';
 const fToString = attempt.toString;
 const funcTag = '[object Function]';
@@ -66,7 +65,7 @@ const isFunction = function isFunction(value, allowClass) {
     return tryFuncToString(value, toBoolean(allowClass));
   }
 
-  if (hasNativeClass && castBoolean(allowClass) === false && isES6ClassFn(value)) {
+  if (hasNativeClass && toBoolean(allowClass) === false && isES6ClassFn(value)) {
     return false;
   }
 

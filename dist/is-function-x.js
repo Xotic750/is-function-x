@@ -2,11 +2,11 @@
 {
   "author": "Graham Fairweather",
   "copywrite": "Copyright (c) 2015-present",
-  "date": "2019-07-27T13:35:30.740Z",
+  "date": "2019-07-27T18:56:15.962Z",
   "describe": "",
   "description": "Determine whether a given value is a function object.",
   "file": "is-function-x.js",
-  "hash": "1af63d2422f888ad5dd9",
+  "hash": "04a36872cdb4f9c88f4c",
   "license": "MIT",
   "version": "4.0.27"
 }
@@ -921,7 +921,6 @@ function is_function_x_esm_newArrowCheck(innerThis, boundThis) { if (innerThis !
 
 
 var FunctionCtr = attempt_x_esm.constructor;
-var castBoolean = true.constructor;
 var is_function_x_esm_SPACE = ' ';
 var fToString = attempt_x_esm.toString;
 var funcTag = '[object Function]';
@@ -981,7 +980,7 @@ var is_function_x_esm_isFunction = function isFunction(value, allowClass) {
     return tryFuncToString(value, to_boolean_x_esm(allowClass));
   }
 
-  if (hasNativeClass && castBoolean(allowClass) === false && isES6ClassFn(value)) {
+  if (hasNativeClass && to_boolean_x_esm(allowClass) === false && isES6ClassFn(value)) {
     return false;
   }
 

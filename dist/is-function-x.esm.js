@@ -10,7 +10,6 @@ import isPrimitive from 'is-primitive';
 import normalise from 'normalize-space-x';
 import deComment from 'replace-comments-x';
 var FunctionCtr = attempt.constructor;
-var castBoolean = true.constructor;
 var SPACE = ' ';
 var fToString = attempt.toString;
 var funcTag = '[object Function]';
@@ -70,7 +69,7 @@ var isFunction = function isFunction(value, allowClass) {
     return tryFuncToString(value, toBoolean(allowClass));
   }
 
-  if (hasNativeClass && castBoolean(allowClass) === false && isES6ClassFn(value)) {
+  if (hasNativeClass && toBoolean(allowClass) === false && isES6ClassFn(value)) {
     return false;
   }
 
