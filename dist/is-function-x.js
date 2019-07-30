@@ -2,11 +2,11 @@
 {
   "author": "Graham Fairweather",
   "copywrite": "Copyright (c) 2015-present",
-  "date": "2019-07-29T21:48:14.168Z",
+  "date": "2019-07-30T00:17:49.244Z",
   "describe": "",
   "description": "Determine whether a given value is a function object.",
   "file": "is-function-x.js",
-  "hash": "04a36872cdb4f9c88f4c",
+  "hash": "c7f79fc6e86ee2f87a5c",
   "license": "MIT",
   "version": "4.0.27"
 }
@@ -909,10 +909,6 @@ var replace_comments_x_esm_replaceComments = function replaceComments(string, re
 
 
 // CONCATENATED MODULE: ./dist/is-function-x.esm.js
-var is_function_x_esm_this = undefined;
-
-function is_function_x_esm_newArrowCheck(innerThis, boundThis) { if (innerThis !== boundThis) { throw new TypeError("Cannot instantiate an arrow function"); } }
-
 
 
 
@@ -928,19 +924,17 @@ var genTag = '[object GeneratorFunction]';
 var asyncTag = '[object AsyncFunction]';
 var ctrRx = /^class /;
 var test = ctrRx.test;
-var hasNativeClass = attempt_x_esm(function () {
-  is_function_x_esm_newArrowCheck(this, is_function_x_esm_this);
-
+var hasNativeClass = attempt_x_esm(function attemptee() {
   /* eslint-disable-next-line babel/new-cap */
   return FunctionCtr('"use strict"; return class My {};')();
-}.bind(undefined)).threw === false;
+}).threw === false;
 
-var testClassstring = function _testClassstring(value) {
+var is_function_x_esm_testClassString = function testClassString(value) {
   return test.call(ctrRx, normalize_space_x_esm(replace_comments_x_esm(fToString.call(value), is_function_x_esm_SPACE)));
 };
 
 var isES6ClassFn = function isES6ClassFunc(value) {
-  var result = attempt_x_esm(testClassstring, value);
+  var result = attempt_x_esm(is_function_x_esm_testClassString, value);
   return result.threw === false && result.value;
 };
 /**
@@ -960,6 +954,11 @@ var tryFuncToString = function funcToString(value, allowClass) {
   }
 
   return attempt_x_esm.call(value, fToString).threw === false;
+};
+
+var is_function_x_esm_compareTags = function compareTags(value) {
+  var strTag = to_string_tag_x_esm(value);
+  return strTag === funcTag || strTag === genTag || strTag === asyncTag;
 };
 /**
  * Checks if `value` is classified as a `Function` object.
@@ -984,8 +983,7 @@ var is_function_x_esm_isFunction = function isFunction(value, allowClass) {
     return false;
   }
 
-  var strTag = to_string_tag_x_esm(value);
-  return strTag === funcTag || strTag === genTag || strTag === asyncTag;
+  return is_function_x_esm_compareTags(value);
 };
 
 /* harmony default export */ var is_function_x_esm = __webpack_exports__["default"] = (is_function_x_esm_isFunction);

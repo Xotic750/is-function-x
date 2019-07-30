@@ -1,7 +1,3 @@
-var _this = this;
-
-function _newArrowCheck(innerThis, boundThis) { if (innerThis !== boundThis) { throw new TypeError("Cannot instantiate an arrow function"); } }
-
 import attempt from 'attempt-x';
 import toBoolean from 'to-boolean-x';
 import toStringTag from 'to-string-tag-x';
@@ -17,19 +13,17 @@ var genTag = '[object GeneratorFunction]';
 var asyncTag = '[object AsyncFunction]';
 var ctrRx = /^class /;
 var test = ctrRx.test;
-var hasNativeClass = attempt(function () {
-  _newArrowCheck(this, _this);
-
+var hasNativeClass = attempt(function attemptee() {
   /* eslint-disable-next-line babel/new-cap */
   return FunctionCtr('"use strict"; return class My {};')();
-}.bind(this)).threw === false;
+}).threw === false;
 
-var testClassstring = function _testClassstring(value) {
+var testClassString = function testClassString(value) {
   return test.call(ctrRx, normalise(deComment(fToString.call(value), SPACE)));
 };
 
 var isES6ClassFn = function isES6ClassFunc(value) {
-  var result = attempt(testClassstring, value);
+  var result = attempt(testClassString, value);
   return result.threw === false && result.value;
 };
 /**
@@ -49,6 +43,11 @@ var tryFuncToString = function funcToString(value, allowClass) {
   }
 
   return attempt.call(value, fToString).threw === false;
+};
+
+var compareTags = function compareTags(value) {
+  var strTag = toStringTag(value);
+  return strTag === funcTag || strTag === genTag || strTag === asyncTag;
 };
 /**
  * Checks if `value` is classified as a `Function` object.
@@ -73,8 +72,7 @@ var isFunction = function isFunction(value, allowClass) {
     return false;
   }
 
-  var strTag = toStringTag(value);
-  return strTag === funcTag || strTag === genTag || strTag === asyncTag;
+  return compareTags(value);
 };
 
 export default isFunction;

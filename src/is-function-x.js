@@ -16,17 +16,17 @@ const ctrRx = /^class /;
 const {test} = ctrRx;
 
 const hasNativeClass =
-  attempt(() => {
+  attempt(function attemptee() {
     /* eslint-disable-next-line babel/new-cap */
     return FunctionCtr('"use strict"; return class My {};')();
   }).threw === false;
 
-const testClassstring = function _testClassstring(value) {
+const testClassString = function testClassString(value) {
   return test.call(ctrRx, normalise(deComment(fToString.call(value), SPACE)));
 };
 
 const isES6ClassFn = function isES6ClassFunc(value) {
-  const result = attempt(testClassstring, value);
+  const result = attempt(testClassString, value);
 
   return result.threw === false && result.value;
 };
@@ -46,6 +46,12 @@ const tryFuncToString = function funcToString(value, allowClass) {
   }
 
   return attempt.call(value, fToString).threw === false;
+};
+
+const compareTags = function compareTags(value) {
+  const strTag = toStringTag(value);
+
+  return strTag === funcTag || strTag === genTag || strTag === asyncTag;
 };
 
 /**
@@ -69,9 +75,7 @@ const isFunction = function isFunction(value, allowClass) {
     return false;
   }
 
-  const strTag = toStringTag(value);
-
-  return strTag === funcTag || strTag === genTag || strTag === asyncTag;
+  return compareTags(value);
 };
 
 export default isFunction;
