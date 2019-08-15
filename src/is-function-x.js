@@ -2,7 +2,7 @@ import attempt from 'attempt-x';
 import toBoolean from 'to-boolean-x';
 import toStringTag from 'to-string-tag-x';
 import hasToStringTag from 'has-to-string-tag-x';
-import isPrimitive from 'is-primitive';
+import isPrimitive from 'is-primitive-x';
 import normalise from 'normalize-space-x';
 import deComment from 'replace-comments-x';
 
