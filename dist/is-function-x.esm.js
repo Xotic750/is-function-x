@@ -5,21 +5,22 @@ import hasToStringTag from 'has-to-string-tag-x';
 import isPrimitive from 'is-primitive-x';
 import normalise from 'normalize-space-x';
 import deComment from 'replace-comments-x';
+import methodize from 'simple-methodize-x';
 var FunctionCtr = attempt.constructor;
 var SPACE = ' ';
-var fToString = attempt.toString;
+var methodizedFunctionToString = methodize(attempt.toString);
 var funcTag = '[object Function]';
 var genTag = '[object GeneratorFunction]';
 var asyncTag = '[object AsyncFunction]';
 var ctrRx = /^class /;
-var test = ctrRx.test;
+var methodizedTest = methodize(ctrRx.test);
 var hasNativeClass = attempt(function attemptee() {
   /* eslint-disable-next-line babel/new-cap */
   return FunctionCtr('"use strict"; return class My {};')();
 }).threw === false;
 
 var testClassString = function testClassString(value) {
-  return test.call(ctrRx, normalise(deComment(fToString.call(value), SPACE)));
+  return methodizedTest(ctrRx, normalise(deComment(methodizedFunctionToString(value), SPACE)));
 };
 
 var isES6ClassFn = function isES6ClassFunc(value) {
@@ -42,7 +43,9 @@ var tryFuncToString = function funcToString(value, allowClass) {
     return false;
   }
 
-  return attempt.call(value, fToString).threw === false;
+  return attempt(function attemptee() {
+    return methodizedFunctionToString(value);
+  }).threw === false;
 };
 
 var compareTags = function compareTags(value) {

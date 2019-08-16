@@ -5,15 +5,16 @@ import hasToStringTag from 'has-to-string-tag-x';
 import isPrimitive from 'is-primitive-x';
 import normalise from 'normalize-space-x';
 import deComment from 'replace-comments-x';
+import methodize from 'simple-methodize-x';
 
 const FunctionCtr = attempt.constructor;
 const SPACE = ' ';
-const fToString = attempt.toString;
+const methodizedFunctionToString = methodize(attempt.toString);
 const funcTag = '[object Function]';
 const genTag = '[object GeneratorFunction]';
 const asyncTag = '[object AsyncFunction]';
 const ctrRx = /^class /;
-const {test} = ctrRx;
+const methodizedTest = methodize(ctrRx.test);
 
 const hasNativeClass =
   attempt(function attemptee() {
@@ -22,7 +23,7 @@ const hasNativeClass =
   }).threw === false;
 
 const testClassString = function testClassString(value) {
-  return test.call(ctrRx, normalise(deComment(fToString.call(value), SPACE)));
+  return methodizedTest(ctrRx, normalise(deComment(methodizedFunctionToString(value), SPACE)));
 };
 
 const isES6ClassFn = function isES6ClassFunc(value) {
@@ -45,7 +46,11 @@ const tryFuncToString = function funcToString(value, allowClass) {
     return false;
   }
 
-  return attempt.call(value, fToString).threw === false;
+  return (
+    attempt(function attemptee() {
+      return methodizedFunctionToString(value);
+    }).threw === false
+  );
 };
 
 const compareTags = function compareTags(value) {
