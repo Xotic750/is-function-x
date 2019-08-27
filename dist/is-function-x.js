@@ -2,7 +2,7 @@
 {
   "author": "Graham Fairweather",
   "copywrite": "Copyright (c) 2015-present",
-  "date": "2019-08-20T19:15:50.770Z",
+  "date": "2019-08-27T19:58:05.265Z",
   "describe": "",
   "description": "Determine whether a given value is a function object.",
   "file": "is-function-x.js",
